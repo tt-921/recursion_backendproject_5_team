@@ -1,0 +1,2 @@
+# recursion_backendproject_5_team
+Recursionのバックエンドプロジェクト5をチーム開発で行う。
