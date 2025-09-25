@@ -1,0 +1,27 @@
+services:
+  db:
+    container_name: db
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+  app:
+    build:
+      context: ./server
+    container_name: app
+    depends_on:
+      - db
+    volumes:
+      - ./server/laravel:/var/www/html
+      - /var/www/html/vendor
+    ports:
+      - "8000:8000" 
+
+volumes:
+  db_data:
