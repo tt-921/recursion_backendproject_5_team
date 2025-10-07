@@ -22,6 +22,15 @@ services:
       - /var/www/html/vendor
     ports:
       - "8000:8000" 
-
+  react:
+    build:
+      context: ./client
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    command: npm start  
 volumes:
   db_data:
