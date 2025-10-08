@@ -23,14 +23,15 @@ services:
     ports:
       - "8000:8000" 
   react:
+    container_name: react
     build:
       context: ./client
     volumes:
       - ./client:/app
       - /app/node_modules
     ports:
-      - "3000:3000"
+      - "5173:5173"
     working_dir: /app
-    command: npm start  
+    command: ["npm", "run", "dev", "--", "--host"]
 volumes:
   db_data:
