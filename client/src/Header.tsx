@@ -1,12 +1,7 @@
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
 import { Input } from "@/components/ui/input"
 import { ChevronRight, Coins, Heart, History, Search, ShoppingCart, User } from "lucide-react"
@@ -15,7 +10,8 @@ import { Button } from "./components/ui/button"
 function Header() {
     return (
         <>
-            <div className="w-full flex items-center justify-between px-4 py-2 border-b">
+        <div className="border-b">
+            <div className="w-full flex items-center container justify-between px-4 py-2 mx-auto">
                 <span className="font-bold">SHOP LOGO</span>
                 <NavigationMenu className="grow w-full">
                     <NavigationMenuList>
@@ -55,6 +51,7 @@ function Header() {
                     </NavigationMenuList>
                 </NavigationMenu>
             </div>
+        </div>
         </>
     )
 }
