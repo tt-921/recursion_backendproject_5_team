@@ -31,6 +31,8 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true # ファイル変更の監視をポーリング方式に変更。CPU負荷が高くなるため、本番環境では使用しない。
     working_dir: /app
     command: ["npm", "run", "dev", "--", "--host"]
 volumes:
