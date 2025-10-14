@@ -5,9 +5,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps:
-      - name: Run tests
-        run: echo "Running tests..."
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_pass
+          MYSQL_DATABASE: laravel
+        ports:
+          - 3306:3306
+
   build:
     runs-on: ubuntu-latest
     needs: test
