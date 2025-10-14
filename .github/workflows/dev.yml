@@ -1,0 +1,16 @@
+name: Dev CI
+on: 
+  push:
+    branches: [ demo-dev ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: echo "Running tests..."
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Build project
+        run: echo "Building project..."
