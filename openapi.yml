@@ -1,0 +1,228 @@
+openapi: 3.0.3
+info:
+  title: E-Commerce Platform API
+  description: E-commerce web application API with Stripe integration
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+  - url: https://staging-api.example.com/v1
+  - url: http://localhost:8000/v1
+
+tags:
+  - name: Authentication
+  - name: Products
+  - name: Admin Products
+  - name: Cart
+  - name: Orders
+  - name: Admin Orders
+  - name: Users
+  - name: Reviews
+  - name: Favorites
+  - name: Wishlist
+  - name: Webhooks
+
+paths:
+  # Authentication
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user account
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login to user account
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout from current session
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+
+  # Products
+  /products:
+    get:
+      tags: [Products]
+      summary: Get list of published products
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: Get product details
+
+  # Admin Product Management
+  /admin/products:
+    get:
+      tags: [Admin Products]
+      summary: Get all products including drafts
+
+  /admin/products/{productId}:
+    get:
+      tags: [Admin Products]
+      summary: Get product details for editing
+
+    put:
+      tags: [Admin Products]
+      summary: Update product details
+
+    delete:
+      tags: [Admin Products]
+      summary: Delete product
+
+  /admin/products/{productId}/publish:
+    post:
+      tags: [Admin Products]
+      summary: Publish a draft product
+
+  /admin/products/{productId}/inventory:
+    put:
+      tags: [Admin Products]
+      summary: Update product inventory
+
+  # Shopping Cart
+  /cart:
+    get:
+      tags: [Cart]
+      summary: Get current shopping cart
+
+  /cart/items:
+    post:
+      tags: [Cart]
+      summary: Add item to cart
+
+  /cart/items/{itemId}:
+    put:
+      tags: [Cart]
+      summary: Update cart item quantity
+
+    delete:
+      tags: [Cart]
+      summary: Remove item from cart
+
+  /cart/clear:
+    delete:
+      tags: [Cart]
+      summary: Clear all items from cart
+
+  # Checkout
+  /checkout/session:
+    post:
+      tags: [Orders]
+      summary: Create Stripe checkout session
+
+  /checkout/guest:
+    post:
+      tags: [Orders]
+      summary: Create guest checkout session
+
+  # Orders
+  /orders:
+    get:
+      tags: [Orders]
+      summary: Get user's order history
+
+  /orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Get order details
+
+  /orders/{orderId}/download:
+    get:
+      tags: [Orders]
+      summary: Download digital product
+
+  # Admin Order Management
+  /admin/orders:
+    get:
+      tags: [Admin Orders]
+      summary: Get all orders
+
+  /admin/orders/{orderId}/shipping:
+    put:
+      tags: [Admin Orders]
+      summary: Update shipping information
+
+  # User Profile
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+
+    put:
+      tags: [Users]
+      summary: Update user profile
+
+  /users/me/password:
+    put:
+      tags: [Users]
+      summary: Change user password
+
+  # Reviews
+  /products/{productId}/reviews:
+    get:
+      tags: [Reviews]
+      summary: Get product reviews
+
+    post:
+      tags: [Reviews]
+      summary: Create a product review
+
+  /reviews/{reviewId}:
+    put:
+      tags: [Reviews]
+      summary: Update own review
+
+    delete:
+      tags: [Reviews]
+      summary: Delete own review
+
+  # Favorites
+  /favorites:
+    get:
+      tags: [Favorites]
+      summary: Get user's favorite products
+
+    post:
+      tags: [Favorites]
+      summary: Add product to favorites
+
+  /favorites/{productId}:
+    delete:
+      tags: [Favorites]
+      summary: Remove product from favorites
+
+  # Wishlist
+  /wishlist:
+    get:
+      tags: [Wishlist]
+      summary: Get user's wishlist
+
+    post:
+      tags: [Wishlist]
+      summary: Add product to wishlist
+
+  /wishlist/{productId}:
+    delete:
+      tags: [Wishlist]
+      summary: Remove product from wishlist
+
+  /wishlist/settings:
+    put:
+      tags: [Wishlist]
+      summary: Update wishlist settings
+
+  /wishlist/public/{shareId}:
+    get:
+      tags: [Wishlist]
+      summary: View public wishlist
+
+  # Webhooks
+  /webhooks/stripe:
+    post:
+      tags: [Webhooks]
+      summary: Handle Stripe webhook events
