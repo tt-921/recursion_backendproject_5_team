@@ -44,6 +44,11 @@ paths:
       tags: [Authentication]
       summary: Refresh access token
 
+  # Home
+  /home:
+    get:
+      summary: Home Page
+
   # Products
   /products:
     get:
@@ -83,6 +88,24 @@ paths:
     put:
       tags: [Admin Products]
       summary: Update product inventory
+
+  # Admin Category Management
+  /admin/categories:
+    post:
+      tags: [Admin Products]
+      summary: Create a new category
+
+    get:
+      tags: [Admin Products]
+      summary: Get all categories including drafts
+    
+  /admin/categories/{categoryId}:
+    put:
+      tags: [Admin Products]
+      summary: Update category details
+    delete:
+      tags: [Admin Products]
+      summary: Delete category
 
   # Shopping Cart
   /cart:
