@@ -3,23 +3,25 @@ on:
   push:
     branches: [ demo-dev ]
 jobs:
-  test:
+  front-build:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root_pass
-          MYSQL_DATABASE: laravel
-        ports:
-          - 3306:3306
     steps:
-      - name: Run tests
-        run: echo "Running tests..."
-
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Build project
-        run: echo "Building project..."
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        run: |
+          cd client
+          npm ci
+      
+      - name: Build frontend
+        run: |
+          cd client
+          npm run build
