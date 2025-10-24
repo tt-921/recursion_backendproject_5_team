@@ -37,7 +37,7 @@ const Login = () => {
       const csrfToken = getCsrfToken();
 
       // ログインリクエスト
-      const response = await fetch("http://localhost:8000/api/login", {
+      const response = await fetch("http://localhost:8000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

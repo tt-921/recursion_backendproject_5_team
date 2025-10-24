@@ -51,7 +51,7 @@ const Signup = () => {
       const csrfToken = getCsrfToken();
 
       // サインアップリクエストを送信
-      const response = await fetch("http://localhost:8000/api/register", {
+      const response = await fetch("http://localhost:8000/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
