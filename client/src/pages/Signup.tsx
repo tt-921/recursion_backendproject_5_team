@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Heading from "@/components/Heading";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const Login = () => {
+const Signup = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -26,18 +27,31 @@ const Login = () => {
     setIsLoading(true);
     setError("");
 
+    // バリデーション
+    if (password !== passwordConfirmation) {
+      setError("パスワードが一致しません");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("パスワードは8文字以上で入力してください");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // CSRFトークンを取得
+      // まずCSRFトークンを取得
       await fetch("http://localhost:8000/sanctum/csrf-cookie", {
         method: "GET",
         credentials: "include",
       });
 
-      // XSRF-TOKENクッキーからCSRFトークンを取得
+      // XSRF-TOKENクッキーからトークンを取得
       const csrfToken = getCsrfToken();
 
-      // ログインリクエスト
-      const response = await fetch("http://localhost:8000/api/login", {
+      // サインアップリクエストを送信
+      const response = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,22 +60,30 @@ const Login = () => {
         },
         credentials: "include",
         body: JSON.stringify({
+          name,
           email,
           password,
+          password_confirmation: passwordConfirmation,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Login successful:", data);
-        navigate("/"); // ログイン成功後、トップページにリダイレクト
+        console.log("Signup successful:", data);
+        navigate("/"); // サインアップ成功後、トップページにリダイレクト
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "ログインに失敗しました");
+        if (errorData.errors) {
+          // Laravelのバリデーションエラー
+          const errorMessages = Object.values(errorData.errors).flat();
+          setError(errorMessages.join(", "));
+        } else {
+          setError(errorData.message || "サインアップに失敗しました");
+        }
       }
     } catch (err) {
       setError("ネットワークエラーが発生しました");
-      console.error("Login error:", err);
+      console.error("Signup error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -69,9 +91,22 @@ const Login = () => {
 
   return (
     <div className="mx-auto container p-4 max-w-md">
-      <Heading>ログイン</Heading>
+      <Heading>新規登録</Heading>
       
       <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+        <div className="space-y-2">
+          <Label htmlFor="name">名前</Label>
+          <Input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="山田太郎"
+            required
+            disabled={isLoading}
+          />
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="email">メールアドレス</Label>
           <Input
@@ -92,9 +127,24 @@ const Login = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="パスワードを入力"
+            placeholder="8文字以上で入力"
             required
             disabled={isLoading}
+            minLength={8}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="passwordConfirmation">パスワード確認</Label>
+          <Input
+            id="passwordConfirmation"
+            type="password"
+            value={passwordConfirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            placeholder="パスワードを再入力"
+            required
+            disabled={isLoading}
+            minLength={8}
           />
         </div>
 
@@ -104,23 +154,23 @@ const Login = () => {
           </div>
         )}
 
-        <Button 
+        <button 
           type="submit" 
-          className="w-full" 
+          className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           disabled={isLoading}
         >
-          {isLoading ? "ログイン中..." : "ログイン"}
-        </Button>
+          {isLoading ? "登録中..." : "新規登録"}
+        </button>
       </form>
 
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600">
-          アカウントをお持ちでない方は
+          すでにアカウントをお持ちの方は
           <button 
             className="text-blue-600 hover:underline ml-1"
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/login")}
           >
-            新規登録
+            ログイン
           </button>
         </p>
       </div>
@@ -128,4 +178,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;
