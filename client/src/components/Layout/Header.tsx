@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -14,15 +16,75 @@ import {
   User,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 function Header() {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const fetchUser = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await fetch("http://localhost:8000/user", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        },
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      } else if (response.status === 401) {
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("User fetch error:", err);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:8000/logout", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+        },
+        credentials: "include",
+      });
+
+      setUser(null);
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
   return (
     <>
       <div className="border-b">
         <div className="w-full flex items-center container justify-between px-4 py-2 mx-auto">
           <span className="font-bold">SHOP LOGO</span>
           <NavigationMenu className="grow w-full">
-            <NavigationMenuList>
+            <NavigationMenuList className="flex-wrap">
               <NavigationMenuItem>
                 <div className="relative w-full max-w-sm">
                   <Input
@@ -55,10 +117,39 @@ function Header() {
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button size="icon-sm" aria-label="Submit" variant="ghost">
-                  <User />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="icon-sm" aria-label="Submit" variant="ghost">
+                      <User />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="center">
+                    {user ? (
+                      <>
+                        <DropdownMenuLabel>アカウント情報</DropdownMenuLabel>
+                        <div className="px-2 py-1.5 text-sm">
+                          <div className="font-medium text-gray-900">{user.name}</div>
+                          <div className="text-gray-600">{user.email}</div>
+                        </div>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout}>
+                          ログアウト
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem onClick={() => navigate("/login")}>
+                          ログイン
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/signup")}>
+                          新規登録
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </NavigationMenuItem>
+
               <NavigationMenuItem>
                 <Button variant="link">
                   <Coins />
