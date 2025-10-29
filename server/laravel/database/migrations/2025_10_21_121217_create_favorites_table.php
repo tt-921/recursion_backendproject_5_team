@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
-            $table->bigInteger('user_id');
-            $table->bigInteger('product_id');
+            $table->bigInteger('user_id')->constrained('users');
+            $table->bigInteger('product_id')->constrained('products');
             $table->timestamp('created_at')->nullable();
 
             $table->primary(['user_id', 'product_id']);

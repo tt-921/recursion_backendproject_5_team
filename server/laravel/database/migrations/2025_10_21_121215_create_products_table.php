@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->foreignId('default_price_id')->nullable();
+            $table->unsignedBigInteger('default_price_id')->nullable();
             $table->string('status');
             $table->foreignId('category_id')->constrained('categories');
             $table->string('creator');
