@@ -19,7 +19,7 @@ services:
       - db
     volumes:
       - ./server/laravel:/var/www/html
-      - /var/www/html/vendor
+      - vendor_data:/var/www/html/vendor
     ports:
       - "8000:8000" 
   react:
@@ -38,3 +38,4 @@ services:
     command: ["npm", "run", "dev", "--", "--host"]
 volumes:
   db_data:
+  vendor_data:
