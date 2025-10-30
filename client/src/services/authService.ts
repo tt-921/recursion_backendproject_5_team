@@ -1,4 +1,5 @@
 import type { User } from "@/types/authTypes";
+import { getCsrfToken } from "@/lib/utils";
 
 const API_URL = "http://localhost:8000";
 
@@ -64,9 +65,18 @@ export const login = async (email: string, password: string, csrfToken: string) 
 
 // ログアウト
 export const logout = async () => {
-  await fetch(`${API_URL}/logout`, {
+  const csrfToken = getCsrfToken();
+
+  const response = await fetch(`${API_URL}/logout`, {
     method: "POST",
-    headers: { Accept: "application/json" },
+    headers: {
+      "Accept": "application/json",
+      "X-XSRF-TOKEN": csrfToken ?? "",
+    },
     credentials: "include",
   });
+
+  if (!response.ok) {
+    console.error("Logout failed:", response.status);
+  }
 };
