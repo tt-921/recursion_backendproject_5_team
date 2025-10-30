@@ -18,6 +18,7 @@ import {
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import type { User as UserType } from "@/types/authTypes";
+import { fetchUser, logout } from "@/services/authService";
 
 
 function Header() {
@@ -25,52 +26,16 @@ function Header() {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  const fetchUser = async () => {
-    try {
-      setIsLoading(true);
-
-      const response = await fetch("http://localhost:8000/user", {
-        method: "GET",
-        headers: {
-          "Accept": "application/json"
-        },
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      } else if (response.status === 401) {
-        setUser(null);
-      }
-    } catch (err) {
-      console.error("User fetch error:", err);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:8000/logout", {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-        },
-        credentials: "include",
-      });
-
-      setUser(null);
-      navigate("/login");
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
-  };
-
   useEffect(() => {
-    fetchUser();
+    fetchUser().then(setUser);
   }, []);
+
+  const handleLogoutClick = async () => {
+    await logout();
+    setUser(null);
+    navigate("/login");
+  };
+
   return (
     <>
       <div className="border-b">
@@ -125,7 +90,7 @@ function Header() {
                           <div className="text-gray-600">{user.email}</div>
                         </div>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogout}>
+                        <DropdownMenuItem onClick={handleLogoutClick}>
                           ログアウト
                         </DropdownMenuItem>
                       </>

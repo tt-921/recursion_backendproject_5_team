@@ -4,6 +4,8 @@ import Heading from "@/components/Heading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getCsrfToken } from "@/lib/utils";
+import { login } from "@/services/authService";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,59 +14,12 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const getCsrfToken = () => {
-    const cookies = document.cookie.split(';');
-    const xsrfCookie = cookies.find(cookie => cookie.trim().startsWith('XSRF-TOKEN='));
-    if (xsrfCookie) {
-      return decodeURIComponent(xsrfCookie.split('=')[1]);
-    }
-    return null;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
-    try {
-      // CSRFトークンを取得
-      await fetch("http://localhost:8000/sanctum/csrf-cookie", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      // XSRF-TOKENクッキーからCSRFトークンを取得
-      const csrfToken = getCsrfToken();
-
-      // ログインリクエスト
-      const response = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          ...(csrfToken && { "X-XSRF-TOKEN": csrfToken }),
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login successful:", data);
-        navigate("/"); // ログイン成功後、トップページにリダイレクト
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "ログインに失敗しました");
-      }
-    } catch (err) {
-      setError("ネットワークエラーが発生しました");
-      console.error("Login error:", err);
-    } finally {
-      setIsLoading(false);
-    }
+    const csrfToken = getCsrfToken();
+    const response = await login(email, password, csrfToken!);
+    if (response.ok) navigate("/");
+    else setError("ログイン失敗");
   };
 
   return (
