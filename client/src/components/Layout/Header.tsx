@@ -18,12 +18,13 @@ import {
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import type { User as UserType } from "@/types/authTypes";
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/authAtoms";
 import { fetchUser, logout } from "@/services/authService";
 
 
 function Header() {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useAtom(userAtom);
   const navigate = useNavigate();
 
   useEffect(() => {

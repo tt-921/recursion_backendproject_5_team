@@ -4,6 +4,8 @@ import Heading from "@/components/Heading";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getCsrfToken } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/authAtoms";
 import { signup } from "@/services/authService";
 
 const Signup = () => {
@@ -14,6 +16,8 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const [, setUser] = useAtom(userAtom);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +44,8 @@ const Signup = () => {
       const response = await signup(name, email, password, passwordConfirmation, csrfToken);
 
       if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
         navigate("/");
       } else {
         const errorData = await response.json();

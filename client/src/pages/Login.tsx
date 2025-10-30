@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getCsrfToken } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/authAtoms";
 import { login } from "@/services/authService";
 
 const Login = () => {
@@ -14,12 +16,19 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const [, setUser] = useAtom(userAtom);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const csrfToken = getCsrfToken();
     const response = await login(email, password, csrfToken!);
-    if (response.ok) navigate("/");
-    else setError("ログイン失敗");
+    if (response.ok) {
+      const data = await response.json();
+      setUser(data.user);
+      navigate("/");
+    } else {
+      setError("ログイン失敗");
+    }
   };
 
   return (
