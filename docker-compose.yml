@@ -11,12 +11,25 @@ services:
       - db_data:/var/lib/mysql
     ports:
       - "3306:3306"
+
+  db_test:
+    container_name: db_test
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: test_root_pw
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: test_user
+      MYSQL_PASSWORD: test_pw
+    ports:
+      - "3307:3306"
+
   app:
     build:
       context: ./server
     container_name: app
     depends_on:
       - db
+      - db_test
     volumes:
       - ./server/laravel:/var/www/html
       - vendor_data:/var/www/html/vendor
