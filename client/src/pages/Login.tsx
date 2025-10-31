@@ -25,7 +25,13 @@ const Login = () => {
     if (response.ok) {
       const data = await response.json();
       setUser(data.user);
-      navigate("/");
+
+      const role = data.user?.role;
+      if (role === "admin") {
+        navigate("/admin/products");
+      } else {
+        navigate("/");
+      }
     } else {
       setError("ログイン失敗");
     }
