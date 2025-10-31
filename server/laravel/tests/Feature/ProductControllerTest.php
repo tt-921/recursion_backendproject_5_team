@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Product;
@@ -16,10 +17,16 @@ class ProductControllerTest extends TestCase
         parent::setUp();
         // テスト用カテゴリ作成（外部キー制約対策）
         Category::factory()->create(['id' => 1, 'name' => 'テストカテゴリ']);
+
+        $user = User::factory()->create([
+            'role' => 'admin',
+        ]);
+        $this->actingAs($user, 'web');
     }
 
     public function test_product_index()
     {
+
         Product::factory()->count(2)->create(['category_id' => 1]);
         $response = $this->get('/products');
         $response->assertOk()->assertJsonCount(2);

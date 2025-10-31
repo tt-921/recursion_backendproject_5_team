@@ -19,7 +19,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    // 商品CRUD API
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('products', ProductController::class);
+    });
 });
-
-// 商品CRUD API
-Route::resource('products', ProductController::class);
