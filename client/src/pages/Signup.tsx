@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import Heading from "@/components/Heading";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getCsrfToken } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/authAtoms";
+import { signup } from "@/services/authService";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -13,21 +17,13 @@ const Signup = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const getCsrfToken = () => {
-    const cookies = document.cookie.split(';');
-    const xsrfCookie = cookies.find(cookie => cookie.trim().startsWith('XSRF-TOKEN='));
-    if (xsrfCookie) {
-      return decodeURIComponent(xsrfCookie.split('=')[1]);
-    }
-    return null;
-  };
+  const [, setUser] = useAtom(userAtom);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // バリデーション
     if (password !== passwordConfirmation) {
       setError("パスワードが一致しません");
       setIsLoading(false);
@@ -41,40 +37,19 @@ const Signup = () => {
     }
 
     try {
-      // まずCSRFトークンを取得
-      await fetch("http://localhost:8000/sanctum/csrf-cookie", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      // XSRF-TOKENクッキーからトークンを取得
+      // CSRFトークン取得
       const csrfToken = getCsrfToken();
 
-      // サインアップリクエストを送信
-      const response = await fetch("http://localhost:8000/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          ...(csrfToken && { "X-XSRF-TOKEN": csrfToken }),
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          password_confirmation: passwordConfirmation,
-        }),
-      });
+      // サインアップAPI呼び出し
+      const response = await signup(name, email, password, passwordConfirmation, csrfToken);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Signup successful:", data);
-        navigate("/"); // サインアップ成功後、トップページにリダイレクト
+        setUser(data.user);
+        navigate("/");
       } else {
         const errorData = await response.json();
         if (errorData.errors) {
-          // Laravelのバリデーションエラー
           const errorMessages = Object.values(errorData.errors).flat();
           setError(errorMessages.join(", "));
         } else {
@@ -82,8 +57,8 @@ const Signup = () => {
         }
       }
     } catch (err) {
-      setError("ネットワークエラーが発生しました");
       console.error("Signup error:", err);
+      setError("ネットワークエラーが発生しました");
     } finally {
       setIsLoading(false);
     }
