@@ -28,9 +28,9 @@ class ProductRequest extends FormRequest
             'default_price_id' => 'nullable|integer',
             'status' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'creator' => 'required|string',
+            'creator' => 'nullable|string',
             'stripe_product_id' => 'nullable|integer',
-            'seo_tags' => 'required|array',
+            'seo_tags' => 'nullable|array',
             'released_at' => 'nullable|date',
         ];
     }
