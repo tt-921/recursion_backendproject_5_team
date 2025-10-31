@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,3 +20,6 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 });
+
+// 商品CRUD API
+Route::resource('products', ProductController::class);
