@@ -110,4 +110,36 @@ class ProductControllerTest extends TestCase
         $response->assertOk();
         $this->assertDatabaseMissing('products', ['id' => $product->id]);
     }
+
+    public function test_non_admin_is_guarded()
+    {
+        // 管理者ではないユーザーで再度認証
+        $nonAdmin = User::factory()->create(['role' => 'user']);
+        $this->actingAs($nonAdmin, 'web');
+
+        // 作成はガードされる（403 Forbidden を期待）
+        $postData = [
+            'title' => 'ガードテスト商品',
+            'description' => 'ガード確認用',
+            'default_price_id' => null,
+            'status' => 'draft',
+            'category_id' => 1,
+            'creator' => 'テストユーザ',
+            'stripe_product_id' => 999999,
+            'seo_tags' => [
+                'title' => 'SEO',
+                'description' => 'SEO',
+                'image' => 'https://example.com/test.jpg',
+            ],
+            'released_at' => now()->toDateTimeString(),
+        ];
+
+        $createResponse = $this->postJson('/products', $postData);
+        $createResponse->assertForbidden();
+
+        // 削除もガードされる
+        $product = Product::factory()->create(['category_id' => 1]);
+        $deleteResponse = $this->delete("/products/{$product->id}");
+        $deleteResponse->assertForbidden();
+    }
 }
