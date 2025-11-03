@@ -15,8 +15,20 @@ class CategorySeeder extends Seeder
     {
         DB::table('categories')->insert([
             [
-                'name' => 'test_category',
-            ]
-            ]);
+                'name' => 'test_category1',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'test_category2',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'test_category3',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 }
