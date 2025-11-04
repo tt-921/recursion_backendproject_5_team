@@ -1,5 +1,6 @@
 import Heading from '@/components/Heading';
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import { Skeleton } from '../components/ui/skeleton';
@@ -29,7 +30,7 @@ const ProductThumb: React.FC<{ src?: string | null; alt: string }> = ({ src, alt
       </div>
     );
   }
-  const [loaded, setLoaded] = React.useState(false);
+  const [loaded, setLoaded] = useState(false);
   return (
     <div className="relative h-[100px] w-[100px] mx-auto">
       {!loaded && <Skeleton className="absolute inset-0 rounded-md" data-slot="skeleton" />}
@@ -55,7 +56,7 @@ const CategoryThumb: React.FC<{ src?: string | null; alt: string }> = ({ src, al
       </div>
     );
   }
-  const [loaded, setLoaded] = React.useState(false);
+  const [loaded, setLoaded] = useState(false);
   return (
     <div className="relative h-[72px] w-[72px]">
       {!loaded && <Skeleton className="absolute inset-0 rounded" data-slot="skeleton" />}
@@ -79,11 +80,32 @@ function Top() {
     imageUrl: null,
   }));
 
-  const categories: Category[] = Array.from({ length: 6 }).map((_, i) => ({
-    id: i + 1,
-    name: `カテゴリ名 ${i + 1}`,
-    imageUrl: null, // TODO: Laravel API の image_url をここに割り当てる
-  }));
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        setCategoriesLoading(true);
+        setCategoriesError(null);
+        const res = await fetch('http://localhost:8000/categories', { signal: controller.signal });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const data: Category[] = await res.json();
+        setCategories(data);
+      } catch (e: any) {
+        if (e?.name !== 'AbortError') {
+          setCategoriesError(e?.message ?? 'failed to fetch categories');
+        }
+      } finally {
+        setCategoriesLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, []);
 
   return (
     <>
@@ -131,29 +153,66 @@ function Top() {
           </div>
 
           <div className="grid grid-cols-6 gap-4 mb-6">
-            {categories.map((c) => (
-              <a
-                key={c.id}
-                href={`/categories/${c.id}`}
-                className="flex flex-col items-center hover:opacity-80 transition-opacity"
-              >
-                <CategoryThumb src={c.imageUrl} alt={c.name} />
-                <p className="text-xs mt-2 text-black hover:underline">{c.name}</p>
-              </a>
-            ))}
+            {categoriesLoading && (
+              <>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex flex-col items-center">
+                    <Skeleton className="h-[72px] w-[72px] rounded" />
+                    <Skeleton className="h-4 w-16 mt-2" />
+                  </div>
+                ))}
+              </>
+            )}
+            {!categoriesLoading && categoriesError && (
+              <div className="col-span-6 text-sm text-red-600">
+                カテゴリの取得に失敗しました: {categoriesError}
+              </div>
+            )}
+            {!categoriesLoading &&
+              !categoriesError &&
+              categories.map((c) => (
+                <a
+                  key={c.id}
+                  href={`/categories/${c.id}`}
+                  className="flex flex-col items-center hover:opacity-80 transition-opacity"
+                >
+                  <CategoryThumb src={c.imageUrl} alt={c.name} />
+                  <p className="text-xs mt-2 text-black hover:underline">{c.name}</p>
+                </a>
+              ))}
           </div>
 
           <div className="grid grid-cols-3 gap-6">
-            {categories.map((category) => (
-              <a
-                key={category.id}
-                href={`/categories/${category.id}`}
-                className="w-full flex items-center justify-between text-sm py-2 border-b hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-black hover:underline">{category.name}</span>
-                <ChevronRight size={16} />
-              </a>
-            ))}
+            {categoriesLoading && (
+              <>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-full flex items-center justify-between text-sm py-2 border-b"
+                  >
+                    <Skeleton className="h-4 w-24" />
+                    <ChevronRight size={16} />
+                  </div>
+                ))}
+              </>
+            )}
+            {!categoriesLoading && categoriesError && (
+              <div className="col-span-3 text-sm text-red-600">
+                カテゴリの取得に失敗しました: {categoriesError}
+              </div>
+            )}
+            {!categoriesLoading &&
+              !categoriesError &&
+              categories.map((category) => (
+                <a
+                  key={category.id}
+                  href={`/categories/${category.id}`}
+                  className="w-full flex items-center justify-between text-sm py-2 border-b hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-black hover:underline">{category.name}</span>
+                  <ChevronRight size={16} />
+                </a>
+              ))}
           </div>
         </section>
       </div>

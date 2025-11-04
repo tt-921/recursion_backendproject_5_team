@@ -14,8 +14,9 @@ class CategoryController extends Controller
         );
     }
 
-    public function show(Category $category): JsonResponse
+    public function show(int $id): JsonResponse
     {
+        $category = Category::findOrFail($id);
         return response()->json($category);
     }
 }
