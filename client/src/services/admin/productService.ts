@@ -10,7 +10,7 @@ function makeError(status: number, message?: string) {
 }
 
 export const listProducts = async (): Promise<Product[]> => {
-    const res = await fetch(`${API_URL}/products`, {
+    const res = await fetch(`${API_URL}/admin/products`, {
         method: "GET",
         headers: { Accept: "application/json" },
         credentials: "include",
@@ -24,7 +24,7 @@ export const listProducts = async (): Promise<Product[]> => {
 };
 
 export const getProduct = async (id: number | string): Promise<Product> => {
-    const res = await fetch(`${API_URL}/products/${id}`, {
+    const res = await fetch(`${API_URL}/admin/products/${id}`, {
         method: "GET",
         headers: { Accept: "application/json" },
         credentials: "include",
@@ -38,7 +38,7 @@ export const getProduct = async (id: number | string): Promise<Product> => {
 };
 
 export const createProduct = async (payload: Partial<Product>): Promise<Product> => {
-    const res = await fetch(`${API_URL}/products`, {
+    const res = await fetch(`${API_URL}/admin/products`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export const createProduct = async (payload: Partial<Product>): Promise<Product>
 };
 
 export const updateProduct = async (id: number | string, payload: Partial<Product>): Promise<Product> => {
-    const res = await fetch(`${API_URL}/products/${id}`, {
+    const res = await fetch(`${API_URL}/admin/products/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export const updateProduct = async (id: number | string, payload: Partial<Produc
 };
 
 export const deleteProduct = async (id: number | string): Promise<void> => {
-    const res = await fetch(`${API_URL}/products/${id}`, {
+    const res = await fetch(`${API_URL}/admin/products/${id}`, {
         method: "DELETE",
         headers: {
             Accept: "application/json",

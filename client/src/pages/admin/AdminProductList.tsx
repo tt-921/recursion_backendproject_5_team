@@ -4,7 +4,7 @@ import Heading from "@/components/Heading";
 import { Button } from "@/components/ui/button";
 import { Trash, Edit, Plus } from "lucide-react";
 import type { Product as ProductType } from "@/types/ProductType";
-import { listProducts, deleteProduct } from "@/services/productService";
+import { listProducts, deleteProduct } from "@/services/admin/productService";
 
 
 const AdminProductList = () => {

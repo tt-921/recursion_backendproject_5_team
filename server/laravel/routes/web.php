@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Admin;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     // 商品CRUD API
-    Route::middleware('role:admin')->group(function () {
-        Route::resource('products', ProductController::class);
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        Route::resource('products', Admin\ProductController::class);
     });
 });
