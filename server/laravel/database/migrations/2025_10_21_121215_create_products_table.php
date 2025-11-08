@@ -18,11 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('default_price_id')->nullable();
             $table->string('status');
             $table->foreignId('category_id')->constrained('categories');
-            $table->string('creator');
+            $table->string('creator')->nullable();
             $table->timestamps();
             $table->timestamp('released_at')->nullable();
-            $table->bigInteger('stripe_product_id')->unique();
-            $table->json('seo_tags');
+            $table->bigInteger('stripe_product_id')->unique()->nullable();
+            $table->json('seo_tags')->nullable();
         });
     }
 

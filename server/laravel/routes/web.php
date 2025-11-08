@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,5 +18,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+    // 商品CRUD API
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        Route::resource('products', Admin\ProductController::class);
     });
 });
