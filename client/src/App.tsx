@@ -9,6 +9,7 @@ import AdminLayout from "./components/Layout/admin/AdminLayout";
 import AdminProductList from "@/pages/admin/AdminProductList";
 import AdminProductCreate from "@/pages/admin/AdminProductCreate";
 import AdminProductEdit from "@/pages/admin/AdminProductEdit";
+import ProductDetail from "./pages/ProductDetail";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<Top />} />
             <Route path="/delivery" element={<Delivery />} />
             <Route path="/product-list" element={<ProductList/>} />
+            <Route path="/product/:id" element={<ProductDetail　/>} /> 
             <Route path="/login" element={<Login/>} />
             <Route path="/signup" element={<Signup/>} />
           </Route>

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Heading from "@/components/Heading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,18 +152,25 @@ const ProductList = () => {
           <Heading>カテゴリ名</Heading>
         </div>
 
+        {/* 商品カード */}
         <div className="bg-white p-6 grid grid-cols-4 gap-6 rounded-md flex-1">
           {products.map((product) => (
-            <ProductCard
+            <Link
               key={product.id}
-              title={product.title}
-              description={product.description}
-              imageUrl={product.imageUrl}
-              rating={product.rating}
-            />
+              to={`/product/${product.id}`}
+              className="hover:opacity-90 transition"
+            >
+              <ProductCard
+                title={product.title}
+                description={product.description}
+                imageUrl={product.imageUrl}
+                rating={product.rating}
+              />
+            </Link>
           ))}
         </div>
 
+        {/* ページネーション */}
         <div className="flex items-center justify-center gap-2 mt-6 mb-10">
           <button className="text-sm px-3 bg-white transition cursor-pointer">
             &lt;

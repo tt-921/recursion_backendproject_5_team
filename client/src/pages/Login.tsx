@@ -20,7 +20,10 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     const csrfToken = getCsrfToken();
+    // ログインAPI呼び出し
     const response = await login(email, password, csrfToken!);
     if (response.ok) {
       const data = await response.json();
@@ -33,6 +36,7 @@ const Login = () => {
         navigate("/");
       }
     } else {
+      setIsLoading(false);
       setError("ログイン失敗");
     }
   };
