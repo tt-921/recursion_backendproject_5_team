@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController as PublicCategory;
 use App\Http\Controllers\Admin\CategoryController as AdminCategory;
+use App\Http\Controllers\Admin;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,7 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::prefix('admin')->group(function () {
+    // 商品CRUD API
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        Route::resource('products', Admin\ProductController::class);
+        
         Route::get('/categories',               [AdminCategory::class, 'index']);
         Route::get('/categories/{id}',          [AdminCategory::class, 'show']);
         Route::post('/categories',              [AdminCategory::class, 'store']);
