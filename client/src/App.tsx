@@ -18,8 +18,8 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Top />} />
             <Route path="/delivery" element={<Delivery />} />
-            <Route path="/product-list" element={<ProductList/>} />
-            <Route path="/product/:id" element={<ProductDetail　/>} /> 
+            <Route path="/products" element={<ProductList/>} />
+            <Route path="/products/:id" element={<ProductDetail/>} /> 
             <Route path="/login" element={<Login/>} />
             <Route path="/signup" element={<Signup/>} />
           </Route>
