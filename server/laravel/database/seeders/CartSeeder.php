@@ -13,6 +13,13 @@ class CartSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        DB::table('carts')->insert([
+            [
+                'user_id' => 1,
+                'session_id' => 'session_id_guest',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ]);
     }
 }
