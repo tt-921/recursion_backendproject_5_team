@@ -8,6 +8,9 @@ use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeMail;
+
 
 class AuthTest extends TestCase
 {
@@ -227,5 +230,32 @@ class AuthTest extends TestCase
                         'name' => 'John Doe',
                         'email' => 'john@example.com',
                     ]);
+    }
+
+    /**
+     * Test mail successfully receive email when register success
+     */
+    public function test_it_sends_welcome_email_on_registration()
+    {
+        Mail::fake();
+
+        $userData = [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ];
+
+        // ユーザー登録APIを呼び出す
+        $response = $this->postJson('/register', $userData);
+
+        $response->assertStatus(201);
+
+        $user = User::where('email', 'test@example.com')->first();
+
+        // WelcomeMail が送信されたか確認
+        Mail::assertSent(WelcomeMail::class, function ($mail) use ($user) {
+            return $mail->hasTo($user->email);
+        });
     }
 }
