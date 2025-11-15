@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Category;
 
 class Product extends Model
 {
@@ -25,4 +26,16 @@ class Product extends Model
         'seo_tags' => 'array',
         'released_at' => 'datetime',
     ];
+
+    protected $hidden = ['default_price_id', 'stripe_product_id', 'creator', 'seo_tags'];
+
+    public function scopePublished($q)
+    {
+        return $q->where('status', 'published');
+    }
+
+    public function category()
+{
+    return $this->belongsTo(Category::class);
+}
 }
