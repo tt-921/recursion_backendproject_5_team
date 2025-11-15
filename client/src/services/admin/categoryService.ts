@@ -1,4 +1,4 @@
-import type { Product } from '@/types/ProductType';
+import type { Category } from '@/types/CategoryType';
 import { getCsrfToken } from '@/lib/utils';
 import { API_URL } from '@/config/api';
 
@@ -8,25 +8,22 @@ function makeError(status: number, message?: string) {
   return err;
 }
 
-export const listProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${API_URL}/admin/products`, {
+export const listCategories = async (): Promise<Category[]> => {
+  const res = await fetch(`${API_URL}/admin/categories`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
-    credentials: 'include',
   });
 
   if (res.status === 401) throw makeError(401, 'Unauthorized');
   if (!res.ok) throw makeError(res.status);
-
   const data = await res.json();
   return Array.isArray(data) ? data : data.data || [];
 };
 
-export const getProduct = async (id: number | string): Promise<Product> => {
-  const res = await fetch(`${API_URL}/admin/products/${id}`, {
+export const getCategories = async (id: number | string): Promise<Category> => {
+  const res = await fetch(`${API_URL}/admin/categories/${id}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
-    credentials: 'include',
   });
 
   if (res.status === 401) throw makeError(401, 'Unauthorized');
@@ -36,8 +33,8 @@ export const getProduct = async (id: number | string): Promise<Product> => {
   return data && data.id ? data : data.data;
 };
 
-export const createProduct = async (payload: Partial<Product>): Promise<Product> => {
-  const res = await fetch(`${API_URL}/admin/products`, {
+export const createCategories = async (payload: Partial<Category>): Promise<Category> => {
+  const res = await fetch(` ${API_URL}/admin/categories`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -51,17 +48,16 @@ export const createProduct = async (payload: Partial<Product>): Promise<Product>
   if (res.status === 401) throw makeError(401, 'Unauthorized');
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw makeError(res.status, body.message || `HTTP ${res.status}`);
+    throw makeError(res.status, body.message || 'HTTP ${res.status}');
   }
-
   return await res.json();
 };
 
-export const updateProduct = async (
+export const updateCategories = async (
   id: number | string,
-  payload: Partial<Product>
-): Promise<Product> => {
-  const res = await fetch(`${API_URL}/admin/products/${id}`, {
+  payload: Partial<Category>
+): Promise<Category> => {
+  const res = await fetch(`${API_URL}/admin/categories/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -77,12 +73,11 @@ export const updateProduct = async (
     const body = await res.json().catch(() => ({}));
     throw makeError(res.status, body.message || `HTTP ${res.status}`);
   }
-
   return await res.json();
 };
 
-export const deleteProduct = async (id: number | string): Promise<void> => {
-  const res = await fetch(`${API_URL}/admin/products/${id}`, {
+export const deleteCategories = async (id: number | string): Promise<void> => {
+  const res = await fetch(`${API_URL}/admin/categories/${id}`, {
     method: 'DELETE',
     headers: {
       Accept: 'application/json',

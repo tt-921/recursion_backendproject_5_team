@@ -10,7 +10,7 @@ class CategoryController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(
-            Category::orderBy('id','asc')->get()
+            Category::all()
         );
     }
 
