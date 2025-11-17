@@ -1,18 +1,23 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu";
+} from '@/components/ui/navigation-menu';
+import { User } from 'lucide-react';
+import { Button } from '../../ui/button';
 import {
-  User,
-} from "lucide-react";
-import { Button } from "../../ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../../ui/dropdown-menu";
-import { useAtom } from "jotai";
-import { userAtom } from "@/atoms/authAtoms";
-import { fetchUser, logout } from "@/services/authService";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../ui/dropdown-menu';
+import { useAtom } from 'jotai';
+import { userAtom } from '@/atoms/authAtoms';
+import { fetchUser, logout } from '@/services/authService';
 
 interface User {
   id: number;
@@ -30,11 +35,11 @@ function AdminHeader() {
   useEffect(() => {
     fetchUser().then(setUser);
   }, []);
-  
+
   const handleLogoutClick = async () => {
     await logout();
     setUser(null);
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
@@ -45,12 +50,20 @@ function AdminHeader() {
           <NavigationMenu className="grow w-full">
             <NavigationMenuList className="flex-wrap">
               <NavigationMenuItem>
-                <Button aria-label="Submit" variant="ghost" onClick={() => navigate("/admin/products")}>
+                <Button
+                  aria-label="Submit"
+                  variant="ghost"
+                  onClick={() => navigate('/admin/products')}
+                >
                   商品管理
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button aria-label="Submit" variant="ghost">
+                <Button
+                  aria-label="Submit"
+                  variant="ghost"
+                  onClick={() => navigate('/admin/categories')}
+                >
                   カテゴリー管理
                 </Button>
               </NavigationMenuItem>
@@ -70,16 +83,14 @@ function AdminHeader() {
                           <div className="text-gray-600">{user.email}</div>
                         </div>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogoutClick}>
-                          ログアウト
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogoutClick}>ログアウト</DropdownMenuItem>
                       </>
                     ) : (
                       <>
-                        <DropdownMenuItem onClick={() => navigate("/login")}>
+                        <DropdownMenuItem onClick={() => navigate('/login')}>
                           ログイン
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate("/signup")}>
+                        <DropdownMenuItem onClick={() => navigate('/signup')}>
                           新規登録
                         </DropdownMenuItem>
                       </>
