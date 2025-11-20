@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController as PublicCategory;
 use App\Http\Controllers\ProductController as PublicProduct;
 use App\Http\Controllers\Admin\CategoryController as AdminCategory;
 use App\Http\Controllers\Admin\ProductController as AdminProduct;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\Admin;
 
 Route::get('/', function () {
@@ -32,6 +33,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    // お気に入り機能
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::delete('/favorites/{productId}', [FavoriteController::class, 'destroy']);
 
     // 商品CRUD API
     Route::middleware('role:admin')->prefix('admin')->group(function () {
