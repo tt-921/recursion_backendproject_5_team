@@ -17,12 +17,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UserSeeder::class,
-            CartItemSeeder::class,
             CategorySeeder::class,
             FavoriteSeeder::class,
             ProductSeeder::class,
             PriceSeeder::class,
-             OrderSeeder::class,
+            CartSeeder::class,
+            CartItemSeeder::class,
+            OrderSeeder::class,
             OrderItemSeeder::class,
             InventorySeeder::class,
             ReviewSeeder::class,

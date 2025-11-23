@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController as PublicProduct;
 use App\Http\Controllers\Admin\CategoryController as AdminCategory;
 use App\Http\Controllers\Admin\ProductController as AdminProduct;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin;
 
 Route::get('/', function () {
@@ -25,6 +26,12 @@ Route::get('/products/{id}',   [PublicProduct::class, 'show']);
 // カテゴリ管理（一般公開・閲覧用）
 Route::get('/categories',        [PublicCategory::class, 'index']);
 Route::get('/categories/{id}',   [PublicCategory::class, 'show']);
+
+// カート
+Route::get('/cart',    [CartController::class, 'index']);
+Route::post('/cart',   [CartController::class, 'store']);
+Route::put('/cart',    [CartController::class, 'update']);
+Route::delete('/cart', [CartController::class, 'destroy']);
 
 
 // 認証が必要なルート
