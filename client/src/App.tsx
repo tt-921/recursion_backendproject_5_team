@@ -13,6 +13,7 @@ import ProductDetail from './pages/ProductDetail';
 import AdminCategoryList from '@/pages/admin/AdminCategoryList';
 import AdminCategoryCreate from '@/pages/admin/AdminCategoryCreate';
 import AdminCategoryEdit from '@/pages/admin/AdminCategoryEdit';
+import Cart from './pages/Cart';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Route>
