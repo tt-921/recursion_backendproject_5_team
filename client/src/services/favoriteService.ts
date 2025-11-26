@@ -1,5 +1,5 @@
-import type { Favorite } from '@/types/FavoriteType';
-// import { getCsrfToken } from '@/lib/utils';
+import type { FavoriteProduct } from '@/types/FavoriteType';
+import { getCsrfToken } from '@/lib/utils';
 import { API_URL } from '@/config/api';
 
 function makeError(status: number, message?: string) {
@@ -8,7 +8,7 @@ function makeError(status: number, message?: string) {
   return err;
 }
 
-export const listFavorites = async (): Promise<Favorite[]> => {
+export const listFavorites = async (): Promise<FavoriteProduct[]> => {
   const res = await fetch(`${API_URL}/favorites`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
@@ -22,13 +22,13 @@ export const listFavorites = async (): Promise<Favorite[]> => {
   return Array.isArray(data) ? data : data.data || [];
 };
 
-export const addFavorite = async (productId: number | string): Promise<Favorite> => {
+export const addFavorite = async (productId: number | string): Promise<FavoriteProduct> => {
   const res = await fetch(`${API_URL}/favorites`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      // 'X-XSRF-TOKEN': getCsrfToken() ?? '',
+      'X-XSRF-TOKEN': getCsrfToken() ?? '',
     },
     credentials: 'include',
     body: JSON.stringify({ product_id: productId }),
@@ -46,7 +46,7 @@ export const removeFavorite = async (productId: number | string): Promise<void> 
     method: 'DELETE',
     headers: {
       Accept: 'application/json',
-      // 'X-XSRF-TOKEN': getCsrfToken() ?? '',
+      'X-XSRF-TOKEN': getCsrfToken() ?? '',
     },
     credentials: 'include',
   });

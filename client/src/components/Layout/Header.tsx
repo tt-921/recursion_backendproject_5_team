@@ -1,27 +1,25 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/navigation-menu';
+import { Input } from '@/components/ui/input';
+import { ChevronRight, Coins, Heart, History, Search, ShoppingCart, User } from 'lucide-react';
+import { Button } from '../ui/button';
 import {
-  ChevronRight,
-  Coins,
-  Heart,
-  History,
-  Search,
-  ShoppingCart,
-  User,
-} from "lucide-react";
-import { Button } from "../ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import type { User as UserType } from "@/types/authTypes";
-import { useAtom } from "jotai";
-import { userAtom } from "@/atoms/authAtoms";
-import { fetchUser, logout } from "@/services/authService";
-
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import type { User as UserType } from '@/types/authTypes';
+import { useAtom } from 'jotai';
+import { userAtom } from '@/atoms/authAtoms';
+import { fetchUser, logout } from '@/services/authService';
 
 function Header() {
   const [user, setUser] = useAtom(userAtom);
@@ -34,7 +32,11 @@ function Header() {
   const handleLogoutClick = async () => {
     await logout();
     setUser(null);
-    navigate("/login");
+    navigate('/login');
+  };
+
+  const handleFavoriteClick = () => {
+    navigate('/favorites');
   };
 
   return (
@@ -46,10 +48,7 @@ function Header() {
             <NavigationMenuList className="flex-wrap">
               <NavigationMenuItem>
                 <div className="relative w-full max-w-sm">
-                  <Input
-                    className="placeholder:text-gray-400  pr-10"
-                    placeholder="検索"
-                  />
+                  <Input className="placeholder:text-gray-400  pr-10" placeholder="検索" />
                   <Button
                     size="icon-sm"
                     aria-label="Submit"
@@ -71,7 +70,12 @@ function Header() {
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button size="icon-sm" aria-label="Submit" variant="ghost">
+                <Button
+                  size="icon-sm"
+                  aria-label="Submit"
+                  variant="ghost"
+                  onClick={handleFavoriteClick}
+                >
                   <Heart />
                 </Button>
               </NavigationMenuItem>
@@ -91,16 +95,14 @@ function Header() {
                           <div className="text-gray-600">{user.email}</div>
                         </div>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogoutClick}>
-                          ログアウト
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogoutClick}>ログアウト</DropdownMenuItem>
                       </>
                     ) : (
                       <>
-                        <DropdownMenuItem onClick={() => navigate("/login")}>
+                        <DropdownMenuItem onClick={() => navigate('/login')}>
                           ログイン
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate("/signup")}>
+                        <DropdownMenuItem onClick={() => navigate('/signup')}>
                           新規登録
                         </DropdownMenuItem>
                       </>
