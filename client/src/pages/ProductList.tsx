@@ -77,15 +77,22 @@ const ProductList = () => {
 
   const handleToggleFavorite = async (productId: number) => {
     try {
-      if (favoriteIds.includes(productId)) {
+      const isFav = favoriteIds.includes(productId);
+      if (isFav) {
         await removeFavorite(productId);
         setFavoriteIds((prev) => prev.filter((id) => id !== productId));
       } else {
         await addFavorite(productId);
         setFavoriteIds((prev) => [...prev, productId]);
       }
-    } catch (err) {
-      console.error('お気に入りの更新に失敗しました', err);
+    } catch (err: any) {
+      const status = err?.response?.status ?? err?.status;
+      if (status === 401) {
+        alert('お気に入りの更新にはログインが必要です。');
+      } else {
+        alert('お気に入りの更新に失敗しました。');
+      }
+      console.error('Failed to toggle favorite:', err);
     }
   };
   useEffect(() => {
@@ -274,5 +281,4 @@ const ProductList = () => {
     </div>
   );
 };
-
 export default ProductList;

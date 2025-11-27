@@ -84,8 +84,8 @@ const FavoritePage = () => {
         await addFavorite(productId);
         setFavoriteIds((prev) => [...prev, productId]);
       }
-    } catch (err) {
-      console.error('Failed to remove favorite:', err);
+    } catch (err: any) {
+      console.error('Failed to update favorite:', err);
     }
   };
 
@@ -132,5 +132,4 @@ const FavoritePage = () => {
     </>
   );
 };
-
 export default FavoritePage;
