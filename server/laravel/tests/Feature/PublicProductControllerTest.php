@@ -79,13 +79,13 @@ class PublicProductControllerTest extends TestCase
         $response = $this->getJson('/products/search?keyword=alpha');
 
         $response->assertOk();
-        $response->assertJsonPath('result.count', 2);
+        $response->assertJsonPath('count', 2);
         $this->assertEqualsCanonicalizing(
             [$matchByTitle->id, $matchByDescription->id],
-            $response->json('result.products.*.id')
+            $response->json('products.*.id')
         );
-        $this->assertNotContains($nonMatch->id, $response->json('result.products.*.id'));
-        $this->assertNotContains($draft->id, $response->json('result.products.*.id'));
+        $this->assertNotContains($nonMatch->id, $response->json('products.*.id'));
+        $this->assertNotContains($draft->id, $response->json('products.*.id'));
     }
 
     public function test_product_search_requires_keyword()

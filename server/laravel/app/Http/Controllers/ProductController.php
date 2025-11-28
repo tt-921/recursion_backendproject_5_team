@@ -46,10 +46,8 @@ class ProductController extends Controller
         $keyword = trim($data['keyword']);
         if ($keyword === '') {
             return response()->json([
-                'result' => [
-                    'count' => 0,
-                    'products' => [],
-                ],
+                'count' => 0,
+                'products' => [],
             ]);
         }
 
@@ -65,12 +63,10 @@ class ProductController extends Controller
             ->get();
 
         return response()->json([
-            'result' => [
-                'count' => $products->count(),
-                'products' => $products->map(
-                    fn($product) => (new ProductResource($product))->toArray($request)
-                ),
-            ],
+            'count' => $products->count(),
+            'products' => $products->map(
+                fn($product) => (new ProductResource($product))->toArray($request)
+            ),
         ]);
     }
 }
