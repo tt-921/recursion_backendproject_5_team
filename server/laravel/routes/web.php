@@ -37,7 +37,7 @@ Route::post('/cart',   [CartController::class, 'store']);
 Route::put('/cart',    [CartController::class, 'update']);
 Route::delete('/cart', [CartController::class, 'destroy']);
 // Stripe決済
-Route::post('/create-checkout', [Checkout::class, 'createCheckout']);
+Route::post('/create-checkout', [PaymentController::class, 'createCheckout']);
 Route::get('/success', function () { return '支払い成功!';})->name('checkout-success');
 Route::get('/cancel', function () { return '支払いキャンセル';})->name('checkout-cancel');
 
