@@ -8,9 +8,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Services\MailService;
 
 class AuthController extends Controller
 {
+
+    protected $mailService;
+
+    public function __construct(MailService $mailService)
+    {
+        $this->mailService = $mailService;
+    }
+
     /**
      * Register a new user.
      */
@@ -30,6 +40,9 @@ class AuthController extends Controller
 
         // ユーザーをログイン状態にする
         Auth::login($user);
+
+        // メール送信機能追加
+        $this->mailService->sendWelcomeMail($user);
 
         return response()->json([
             'message' => 'User registered successfully',

@@ -1,27 +1,20 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import { Input } from "@/components/ui/input";
-import {
-  ChevronRight,
-  Coins,
-  Heart,
-  History,
-  Search,
-  ShoppingCart,
-  User,
-} from "lucide-react";
-import { Button } from "../ui/button";
+} from '@/components/ui/navigation-menu';
+import { Input } from '@/components/ui/input';
+import { ChevronRight, Coins, Heart, History, Search, ShoppingCart, User } from 'lucide-react';
+import { Button } from '../ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useAtom } from "jotai";
 import { userAtom } from "@/atoms/authAtoms";
 import { fetchUser, logout } from "@/services/authService";
 import { searchProductsBy } from "@/services/productService";
 import type { Product } from "@/types/ProductType";
+import type { User as UserType } from '@/types/authTypes';
 
 
 function Header() {
@@ -38,7 +31,11 @@ function Header() {
   const handleLogoutClick = async () => {
     await logout();
     setUser(null);
-    navigate("/login");
+    navigate('/login');
+  };
+
+  const handleFavoriteClick = () => {
+    navigate('/favorites');
   };
 
   const handleSearchTermChange = async (term: string) => {
@@ -109,7 +106,12 @@ function Header() {
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button size="icon-sm" aria-label="Submit" variant="ghost">
+                <Button
+                  size="icon-sm"
+                  aria-label="Submit"
+                  variant="ghost"
+                  onClick={handleFavoriteClick}
+                >
                   <Heart />
                 </Button>
               </NavigationMenuItem>
@@ -129,16 +131,14 @@ function Header() {
                           <div className="text-gray-600">{user.email}</div>
                         </div>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogoutClick}>
-                          ログアウト
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogoutClick}>ログアウト</DropdownMenuItem>
                       </>
                     ) : (
                       <>
-                        <DropdownMenuItem onClick={() => navigate("/login")}>
+                        <DropdownMenuItem onClick={() => navigate('/login')}>
                           ログイン
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate("/signup")}>
+                        <DropdownMenuItem onClick={() => navigate('/signup')}>
                           新規登録
                         </DropdownMenuItem>
                       </>

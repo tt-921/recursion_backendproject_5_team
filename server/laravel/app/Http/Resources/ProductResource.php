@@ -18,6 +18,7 @@ class ProductResource extends JsonResource
             'id'          => $this->id,
             'title'       => $this->title,
             'description' => $this->description,
+            'category_id' => $this->category_id,
             'status'      => $this->status,
             'released_at' => optional($this->released_at)->toDateString(),
         ];
