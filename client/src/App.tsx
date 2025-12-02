@@ -14,6 +14,7 @@ import AdminCategoryList from '@/pages/admin/AdminCategoryList';
 import AdminCategoryCreate from '@/pages/admin/AdminCategoryCreate';
 import AdminCategoryEdit from '@/pages/admin/AdminCategoryEdit';
 import FavoriteList from './pages/favoriteList';
+import Cart from './pages/Cart';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/favorites" element={<FavoriteList />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Route>
