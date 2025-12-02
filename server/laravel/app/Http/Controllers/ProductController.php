@@ -35,4 +35,38 @@ class ProductController extends Controller
 
         return new ProductResource($p);
     }
+
+    // GET /products/search
+    public function search(Request $request)
+    {
+        $data = $request->validate([
+            'keyword' => ['required', 'string', 'max:255'],
+        ]);
+
+        $keyword = trim($data['keyword']);
+        if ($keyword === '') {
+            return response()->json([
+                'count' => 0,
+                'products' => [],
+            ]);
+        }
+
+        $term = addcslashes($keyword, "%_\\");
+        $products = Product::published()
+            ->where(function ($q) use ($term) {
+                $q->where('title', 'like', "%{$term}%")
+                    ->orWhere('description', 'like', "%{$term}%");
+            })
+            ->with(['category' => fn($qq) => $qq->select('id','name')])
+            ->orderByDesc('released_at')
+            ->orderByDesc('id')
+            ->get();
+
+        return response()->json([
+            'count' => $products->count(),
+            'products' => $products->map(
+                fn($product) => (new ProductResource($product))->toArray($request)
+            ),
+        ]);
+    }
 }

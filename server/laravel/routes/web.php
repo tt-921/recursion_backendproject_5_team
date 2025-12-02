@@ -21,6 +21,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // 商品（一般公開・閲覧用）
 Route::get('/products',        [PublicProduct::class, 'index']);
+Route::get('/products/search', [PublicProduct::class, 'search']);
 Route::get('/products/{id}',   [PublicProduct::class, 'show']);
 
 // カテゴリ管理（一般公開・閲覧用）

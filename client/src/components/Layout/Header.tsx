@@ -8,23 +8,22 @@ import {
 import { Input } from '@/components/ui/input';
 import { ChevronRight, Coins, Heart, History, Search, ShoppingCart, User } from 'lucide-react';
 import { Button } from '../ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/authAtoms";
+import { fetchUser, logout } from "@/services/authService";
+import { searchProductsBy } from "@/services/productService";
+import type { Product } from "@/types/ProductType";
 import type { User as UserType } from '@/types/authTypes';
-import { useAtom } from 'jotai';
-import { userAtom } from '@/atoms/authAtoms';
-import { fetchUser, logout } from '@/services/authService';
+
 
 function Header() {
   const [user, setUser] = useAtom(userAtom);
   const navigate = useNavigate();
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  
   useEffect(() => {
     fetchUser().then(setUser);
   }, []);
@@ -39,6 +38,25 @@ function Header() {
     navigate('/favorites');
   };
 
+  const handleSearchTermChange = async (term: string) => {
+    setSearchTerm(term);
+
+    if (term === "") {
+      setSearchResults([]);
+      setIsOpen(false);
+      return;
+    }
+
+    try {
+      const results = await searchProductsBy(term);
+      setSearchResults(results.products);
+      setIsOpen(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   return (
     <>
       <div className="border-b">
@@ -48,7 +66,25 @@ function Header() {
             <NavigationMenuList className="flex-wrap">
               <NavigationMenuItem>
                 <div className="relative w-full max-w-sm">
-                  <Input className="placeholder:text-gray-400  pr-10" placeholder="検索" />
+                  <Input
+                    className="placeholder:text-gray-400  pr-10"
+                    placeholder="検索"
+                    value={searchTerm}
+                    onChange={(e) => handleSearchTermChange(e.target.value)}
+                  />
+                  {isOpen && searchResults.length > 0 && (
+                    <div className="absolute mt-1 w-full max-w-sm bg-white border shadow-lg rounded-md z-50">
+                      {searchResults.map((item: Product) => (
+                        <div
+                          key={item.id}
+                          onClick={() => navigate(`/products/${item.id}`)}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <div className="font-medium">{item.title}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <Button
                     size="icon-sm"
                     aria-label="Submit"
