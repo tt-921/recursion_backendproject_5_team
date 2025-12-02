@@ -1,7 +1,7 @@
 export interface Product {
   id: number;
   title: string;
-  description?: string | null;
+  description: string;
   category_id?: number | null;
   status?: string | null;
   imageUrl?: string | null;

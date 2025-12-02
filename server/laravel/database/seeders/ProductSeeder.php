@@ -44,6 +44,51 @@ class ProductSeeder extends Seeder
                 ]),
                 'released_at' => now()->subDay(),
             ],
+            [
+                'title' => 'sample_product_one',
+                'description' => 'first sample seeded product',
+                'default_price_id' => null,
+                'status' => 'published',
+                'category_id' => 2,
+                'creator' => 'system',
+                'stripe_product_id' => 3,
+                'seo_tags' => json_encode([
+                    'title' => 'サンプル商品1',
+                    'description' => 'これはサンプル商品1の説明です。',
+                    'image' => 'https://example.com/images/sample1.jpg',
+                ]),
+                'released_at' => now()->subDays(2),
+            ],
+            [
+                'title' => 'sample_product_two',
+                'description' => 'second sample seeded product',
+                'default_price_id' => null,
+                'status' => 'draft',
+                'category_id' => 2,
+                'creator' => 'system',
+                'stripe_product_id' => 4,
+                'seo_tags' => json_encode([
+                    'title' => 'サンプル商品2',
+                    'description' => 'これはサンプル商品2の説明です。',
+                    'image' => 'https://example.com/images/sample2.jpg',
+                ]),
+                'released_at' => null,
+            ],
+            [
+                'title' => 'premium_sample_product',
+                'description' => 'premium level sample product',
+                'default_price_id' => null,
+                'status' => 'published',
+                'category_id' => 3,
+                'creator' => 'system',
+                'stripe_product_id' => 5,
+                'seo_tags' => json_encode([
+                    'title' => 'プレミアムサンプル商品',
+                    'description' => '高品質なプレミアムサンプル商品の紹介です。',
+                    'image' => 'https://example.com/images/sample3.jpg',
+                ]),
+                'released_at' => now(),
+            ],
         ]);
     }
 }
