@@ -35,6 +35,11 @@ jobs:
           cp .env.example .env
           composer install --no-progress --prefer-dist --no-interaction
           php artisan key:generate --no-interaction
+      
+      - name: Debug docker network
+        run: |
+          docker ps
+          docker inspect $(docker ps -q)
 
       - name: Run database migrations
         working-directory: server/laravel
