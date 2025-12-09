@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products');
             $table->integer('stock_quantity');
             $table->integer('reserved_quantity');
-            $table->timestamp('last_updated')->nullable();
+            $table->timestamps();
         });
     }
 

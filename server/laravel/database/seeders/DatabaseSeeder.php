@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             FavoriteSeeder::class,
             PriceSeeder::class,
+            ProductDefaultPriceSeeder::class,
             CartSeeder::class,
             CartItemSeeder::class,
             OrderSeeder::class,

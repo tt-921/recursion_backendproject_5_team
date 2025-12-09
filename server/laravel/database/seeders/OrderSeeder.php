@@ -13,13 +13,5 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
-       DB::table('orders')->insert([
-            [
-                'user_id' => 1,
-                'status' => 'pending',
-                'total_amount' => '1',
-                'email' => 'test@email.com',
-            ]
-        ]);
     }
 }

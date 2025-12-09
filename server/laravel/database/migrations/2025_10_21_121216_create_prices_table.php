@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products');
             $table->integer('stripe_price_id');
             $table->integer('unit_amount');
-            $table->timestamp('created_at')->nullable();
+            $table->timestamps();
 
             $table->primary(['id','stripe_price_id']);
         });

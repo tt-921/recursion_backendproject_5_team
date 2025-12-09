@@ -13,12 +13,5 @@ class WishlistSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('wishlists')->insert([
-            [
-                'user_id' => 1,
-                'name' => 'shonzo_abe',
-                'in_public' => TRUE,
-            ]
-        ]);
     }
 }
