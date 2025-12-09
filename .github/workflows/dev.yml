@@ -13,8 +13,6 @@ jobs:
           MYSQL_DATABASE: test_db
           MYSQL_USER: test_user
           MYSQL_PASSWORD: test_pw
-        ports:
-          - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping -h localhost -ptest_root_pw"
           --health-interval=10s
