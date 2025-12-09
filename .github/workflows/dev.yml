@@ -13,6 +13,8 @@ jobs:
           MYSQL_DATABASE: test_db
           MYSQL_USER: test_user
           MYSQL_PASSWORD: test_pw
+        ports:
+          - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping -h localhost -ptest_root_pw"
           --health-interval=10s
@@ -35,17 +37,12 @@ jobs:
           cp .env.example .env
           composer install --no-progress --prefer-dist --no-interaction
           php artisan key:generate --no-interaction
-      
-      - name: Debug docker network
-        run: |
-          docker ps
-          docker inspect $(docker ps -q)
 
       - name: Run database migrations
         working-directory: server/laravel
         env:
           DB_CONNECTION: mysql
-          DB_HOST: db_test
+          DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_DATABASE: test_db
           DB_USERNAME: root
@@ -56,7 +53,7 @@ jobs:
         working-directory: server/laravel
         env:
           DB_CONNECTION: mysql
-          DB_HOST: db_test
+          DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_DATABASE: test_db
           DB_USERNAME: root
