@@ -1,7 +1,10 @@
 name: Dev CI
 on: 
   push:
-    branches: [ demo-dev ]
+    branches: [ dev ]
+  pull_request:
+    branches:
+      - dev
 jobs:
   backend-test:
     runs-on: ubuntu-latest
