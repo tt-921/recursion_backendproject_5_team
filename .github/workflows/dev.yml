@@ -3,6 +3,58 @@ on:
   push:
     branches: [ demo-dev ]
 jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    services:
+      db_test:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_root_pw
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_pw
+        ports:
+          - 3306:3306
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo_mysql
+          coverage: none
+
+      - name: Install Composer dependencies
+        working-directory: server/laravel
+        run: |
+          cp .env.example .env
+          composer install --no-progress --prefer-dist --no-interaction
+          php artisan key:generate --no-interaction
+
+      - name: Run database migrations
+        working-directory: server/laravel
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: db_test
+          DB_PORT: 3306
+          DB_DATABASE: test_db
+          DB_USERNAME: root
+          DB_PASSWORD: test_root_pw
+        run: php artisan migrate --force
+
+      - name: Run backend tests
+        working-directory: server/laravel
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: db_test
+          DB_PORT: 3306
+          DB_DATABASE: test_db
+          DB_USERNAME: root
+          DB_PASSWORD: test_root_pw
+        run: php artisan test
+
   front-build:
     runs-on: ubuntu-latest
     steps:
