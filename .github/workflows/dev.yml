@@ -15,6 +15,11 @@ jobs:
           MYSQL_PASSWORD: test_pw
         ports:
           - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -ptest_root_pw"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
