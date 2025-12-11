@@ -70,20 +70,18 @@ class PaymentController extends Controller
             'mode' => 'payment',
             'payment_method_types' => ['card'],
             'line_items' => $lineItems,
-            
             'shipping_options' => [
                 [
                     'shipping_rate_data' => [
                         'type' => 'fixed_amount',
-                        'fixed_amount' => [
-                            'amount' => 500,
-                            'currency' => 'jpy',
-                        ],
+                        'fixed_amount' => [ 'amount' => 500, 'currency' => 'jpy'],
                         'display_name' => '通常配送',
                     ],
                 ],
             ],
-
+            'metadata' => [
+                'user_id' => $request->user()->id ?? null,
+            ],
             'success_url' => route('checkout-success'),
             'cancel_url' => route('checkout-cancel'),
         ]);

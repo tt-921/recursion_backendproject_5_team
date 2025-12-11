@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
+use App\Mail\PurchaseMail;
 use App\Models\User;
 use App\Models\Order;
 
@@ -29,8 +30,8 @@ class MailService
     /**
      * 購入完了メール　(今後実装予定）
      */
-    // public function sendPurchaseMail(Order $order)
-    // {
-    //     Mail::to($order->user->email)->send(new PurchaseMail($order));
-    // }
+    public function sendPurchaseMail(User $user)
+    {
+        Mail::to($user->email)->send(new PurchaseMail($user));
+    }
 }
