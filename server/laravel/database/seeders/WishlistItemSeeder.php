@@ -13,11 +13,5 @@ class WishlistItemSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('wishlist_items')->insert([
-            [
-                'product_id' => 1,
-                'wishlist_id' => 1,
-            ]
-        ]);
     }
 }

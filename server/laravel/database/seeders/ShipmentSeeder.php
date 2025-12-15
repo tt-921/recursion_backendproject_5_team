@@ -13,12 +13,5 @@ class ShipmentSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('shipments')->insert([
-            [
-                'order_id' => 1,
-                'tracking_no' => 'test_tracking_no',
-                'status' => 'created',
-            ]
-        ]);
     }
 }

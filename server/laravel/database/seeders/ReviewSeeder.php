@@ -13,13 +13,5 @@ class ReviewSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('reviews')->insert([
-            [
-                'product_id' => 1,
-                'user_id' => 1,
-                'rating' => 3,
-                'comment' => 'test comment',
-            ]
-        ]);
     }
 }

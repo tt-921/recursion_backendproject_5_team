@@ -13,13 +13,5 @@ class CartItemSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('cart_items')->insert([
-            [
-                'cart_id' => 1,
-                'product_id' => 1,
-                'quantity' => '5',
-                'price_id' =>1
-            ]
-        ]);
     }
 }

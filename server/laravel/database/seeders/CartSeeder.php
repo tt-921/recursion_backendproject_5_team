@@ -13,20 +13,5 @@ class CartSeeder extends Seeder
      */
     public function run(): void
     {
-        // Assuming guest cart
-        DB::table('carts')->insert([
-            'user_id' => null,
-            'cart_token' => 'guest_cart_token_1234567890abcdef',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        
-        // Assuming user cart
-        DB::table('carts')->insert([
-            'user_id' => 1, 
-            'cart_token' => 'user_cart_token_1234567890abcdef',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
     }
 }

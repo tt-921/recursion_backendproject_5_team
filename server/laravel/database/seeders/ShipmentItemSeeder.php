@@ -13,12 +13,5 @@ class ShipmentItemSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('shipment_items')->insert([
-            [
-                'shipment_id' => 1,
-                'order_item_id' => 1,
-                'quantity' => 1,
-            ]
-        ]);
     }
 }
