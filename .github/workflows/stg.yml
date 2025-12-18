@@ -1,6 +1,10 @@
 name: stg CI/CD
 on:
-  workflow_dispatch:
+  push:
+    branches: [demo-stg]
+  pull_request:
+    branches:
+      - demo-stg
 jobs:
   backend-test:
     runs-on: ubuntu-latest
@@ -81,12 +85,3 @@ jobs:
         run: |
           cd client
           npm run build
-
-  # deploy-stg:
-  #   needs: [backend-test, front-build]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Setup SSH key
