@@ -17,7 +17,7 @@ class WishlistSeeder extends Seeder
             [
                 'user_id' => 1,
                 'name' => 'shonzo_abe',
-                'in_public' => TRUE,
+                'is_public' => TRUE,
             ]
         ]);
     }

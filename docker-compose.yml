@@ -32,7 +32,7 @@ services:
       - db_test
     volumes:
       - ./server/laravel:/var/www/html
-      - vendor_data:/var/www/html/vendor
+      
     ports:
       - '8000:8000'
   react:
