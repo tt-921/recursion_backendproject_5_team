@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Mail\PurchaseMail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Stripe\Stripe;
 use Stripe\Webhook;
+use App\Services\OrderService;
 
 class WebhookController extends Controller
 {
+    protected OrderService $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
+
     public function handle(Request $request)
     {
         $payload = $request->getContent();
@@ -28,21 +32,9 @@ class WebhookController extends Controller
         if ($event->type === 'checkout.session.completed') {
             $session = $event->data->object;
 
-            $userId = $session->metadata->user_id ?? null;
-
-            if ($userId) {
-                $user = User::find($userId);
-                if ($user) {
-                    Mail::to($user->email)->send(new PurchaseMail($user));
-                    Log::info("購入確定メールをユーザー：{$user->email}を送信");
-                } else {
-                    Log::warning("ユーザーIDに一致するユーザーが見つかりません: {$userId}");
-                }
-            } else {
-                Log::warning("セッションメタデータにユーザーIDが存在しません");
-            }
+            // OrderService に処理を委譲
+            $this->orderService->handleCheckoutSession($session);
         }
-
 
         return response()->json(['status' => 'success']);
     }
