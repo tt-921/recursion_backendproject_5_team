@@ -19,15 +19,20 @@ class PurchaseMail extends Mailable
     /**
      * メッセージのインスタンスを作成
      */
-    public function __construct(User $user)
+    public function __construct(User $user, array $items)
     {
         //
         $this->user = $user;
+        $this->items = $items;
     }
 
     public function build()
     {
         return $this->subject('支払い成功しました')
-                    ->view('emails.purchase');
+                    ->view('emails.purchase')
+                    ->with([
+                        'user' => $this->user,
+                        'items' => $this->items,
+                    ]);
     }
 }

@@ -30,8 +30,8 @@ class MailService
     /**
      * 購入完了メール　(今後実装予定）
      */
-    public function sendPurchaseMail(User $user)
+    public function sendPurchaseMail(User $user, array $itemsForMail)
     {
-        Mail::to($user->email)->send(new PurchaseMail($user));
+        Mail::to($user->email)->send(new PurchaseMail($user, $itemsForMail));
     }
 }
