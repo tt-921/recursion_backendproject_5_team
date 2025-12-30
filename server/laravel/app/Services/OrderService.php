@@ -38,6 +38,46 @@ class OrderService
             }
         }
 
+        // 在庫確認・引当
+        $insufficientStock = [];
+        DB::beginTransaction();
+        try {
+            foreach ($items as $item) {
+                $inventory = DB::table('inventories')
+                    ->where('product_id', $item['product_id'])
+                    ->lockForUpdate() // 同時購入対策
+                    ->first();
+
+                if (!$inventory) {
+                    $insufficientStock[] = "商品ID {$item['product_id']} が存在しません";
+                    continue;
+                }
+
+                if ($inventory->stock_quantity < $item['quantity']) {
+                    $insufficientStock[] = "商品 {$item['name']} の在庫が足りません";
+                }
+            }
+
+            if (!empty($insufficientStock)) {
+                DB::rollBack();
+                Log::warning("購入中止: " . implode(', ', $insufficientStock));
+                return;
+            }
+
+            // 在庫引当（購入確定）
+            foreach ($items as $item) {
+                DB::table('inventories')
+                    ->where('product_id', $item['product_id'])
+                    ->decrement('stock_quantity', $item['quantity']);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("在庫引当中にエラー: " . $e->getMessage());
+            return;
+        }
+
         if ($userId) {
             $user = User::find($userId);
             if ($user) {
