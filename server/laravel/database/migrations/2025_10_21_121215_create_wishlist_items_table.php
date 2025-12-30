@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('wishlist_id')->constrained('wishlists')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->timestamp('created_at')->useCurrent();
-
+            $table->boolean('is_deleted')->default(false);
             $table->primary(['wishlist_id', 'product_id']);
         });
     }

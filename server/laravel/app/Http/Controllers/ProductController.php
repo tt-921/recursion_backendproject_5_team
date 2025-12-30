@@ -27,14 +27,27 @@ class ProductController extends Controller
     }
 
     // GET /products/{id}
-    public function show(int $id)
+    public function show(Request $request, int $id)
     {
         $p = Product::published()
             ->with(['category' => fn($qq) => $qq->select('id','name')])
             ->findOrFail($id);
 
-        return new ProductResource($p);
+        $is_wishlisted = false;
+        if ($user = $request->user()) {
+        $is_wishlisted = $user->wishlist()
+            ->whereHas('items', function ($query) use ($id) {
+                $query->where('product_id', $id)
+                      ->where('is_deleted', false);
+            })->exists();
+        }
+        return (new ProductResource($p))->additional([
+            'meta' => [
+                'is_wishlisted' => $is_wishlisted,
+            ]
+        ]);
     }
+
 
     // GET /products/search
     public function search(Request $request)
