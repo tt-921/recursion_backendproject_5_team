@@ -11,6 +11,9 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin;
 
+
+Route::prefix('api')->group(function () {
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -34,7 +37,6 @@ Route::post('/cart',   [CartController::class, 'store']);
 Route::put('/cart',    [CartController::class, 'update']);
 Route::delete('/cart', [CartController::class, 'destroy']);
 
-
 // 認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -52,4 +54,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('products', AdminProduct::class);
         Route::resource('categories', AdminCategory::class);
     });
+});
 });
