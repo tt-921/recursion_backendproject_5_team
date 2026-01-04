@@ -22,7 +22,7 @@ const ProductCard = ({
   onToggleFavorite,
 }: {
   title: string;
-  description: string;
+  description?: string | null;
   imageUrl: string;
   rating?: number;
   isFavorite?: boolean;
@@ -58,7 +58,7 @@ const ProductCard = ({
           <Heart size={24} className={isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
         </button>
       </div>
-      <p className="text-xs text-gray-600 mt-2 leading-snug">{description}</p>
+      <p className="text-xs text-gray-600 mt-2 leading-snug">{description ?? ''}</p>
     </div>
   );
 };
@@ -250,7 +250,7 @@ const ProductList = () => {
                 >
                   <ProductCard
                     title={product.title}
-                    description={product.description}
+                    description={product.description ?? null}
                     imageUrl={product.imageUrl ?? 'https://via.placeholder.com/150'}
                     isFavorite={favoriteIds.includes(Number(product.id))}
                     onToggleFavorite={() => handleToggleFavorite(product.id)}
