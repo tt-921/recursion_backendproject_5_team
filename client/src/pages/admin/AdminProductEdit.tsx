@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Heading from "@/components/Heading";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { getProduct, updateProduct } from "@/services/admin/productService";
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import Heading from '@/components/Heading';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { getProduct, updateProduct } from '@/services/admin/productService';
 
 const AdminProductEdit = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState<string>('');
+  const [status, setStatus] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,13 +23,13 @@ const AdminProductEdit = () => {
       setLoading(true);
       try {
         const p = await getProduct(id);
-        setTitle(p.title || "");
-        setDescription(p.description || "");
-        setCategoryId(p.category_id ? String(p.category_id) : "");
-        setStatus(p.status || "");
+        setTitle(p.title || '');
+        setDescription(p.description || '');
+        setCategoryId(p.category_id ? String(p.category_id) : '');
+        setStatus(p.status || '');
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
-        setError(msg || "取得に失敗しました");
+        setError(msg || '取得に失敗しました');
       } finally {
         setLoading(false);
       }
@@ -45,16 +45,16 @@ const AdminProductEdit = () => {
     try {
       const payload = {
         title: title.trim(),
-        description: description.trim() || null,
+        description: description.trim(),
         category_id: categoryId ? Number(categoryId) : null,
         status: status || null,
       };
 
       await updateProduct(id, payload);
-      navigate("/admin/products");
+      navigate('/admin/products');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      setError(msg || "保存に失敗しました");
+      setError(msg || '保存に失敗しました');
     } finally {
       setSaving(false);
     }
@@ -92,12 +92,20 @@ const AdminProductEdit = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>カテゴリID</Label>
-              <Input value={categoryId} onChange={(e) => setCategoryId(e.target.value)} type="number" />
+              <Input
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                type="number"
+              />
             </div>
 
             <div>
               <Label>ステータス</Label>
-              <Input value={status} onChange={(e) => setStatus(e.target.value)} placeholder="公開/下書き など" />
+              <Input
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                placeholder="公開/下書き など"
+              />
             </div>
           </div>
 
