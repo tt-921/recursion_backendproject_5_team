@@ -92,6 +92,8 @@ jobs:
           npm ci
 
       - name: Build frontend
+        env:
+          VITE_API_URL: /api
         run: |
           cd client
           npm run build
@@ -143,6 +145,8 @@ jobs:
 
       - name: Build frontend dist
         working-directory: client
+        env:
+          VITE_API_URL: /api
         run: npm run build
 
       - name: Setup SSH key
