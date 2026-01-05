@@ -178,6 +178,7 @@ jobs:
             cd "${{ secrets.STG_APP_DIR }}"
 
             cd app/server/laravel
+            rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php bootstrap/cache/routes-*.php
 
             php artisan migrate --force
             php artisan config:clear
