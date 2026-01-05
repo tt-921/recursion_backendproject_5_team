@@ -126,7 +126,7 @@ jobs:
           coverage: none
 
       - name: Build backend vendor
-        working-directory: server/laravel
+        working-directory: app/server/laravel
         run: |
           composer install --no-dev --no-progress --prefer-dist --no-interaction --optimize-autoloader
 
@@ -156,11 +156,12 @@ jobs:
         run: |
           rsync -az --delete \
             --exclude ".git" \
-            --exclude "server/laravel/storage/logs/*" \
-            --exclude "server/laravel/storage/framework/cache/*" \
-            --exclude "server/laravel/storage/framework/sessions/*" \
-            --exclude "server/laravel/storage/framework/views/*" \
-            --exclude "server/laravel/.env" \
+            --exclude ".github" \
+            --exclude "node_modules/**" \
+            --exclude "client/node_modules/**" \
+            --exclude "app/server/laravel/.env" \
+            --exclude "app/server/laravel/storage/**" \
+            --exclude "app/server/laravel/bootstrap/cache/**" \
             -e "ssh -i ~/.ssh/id_key" \
             ./ \
             ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}
@@ -171,9 +172,13 @@ jobs:
             set -e
             cd "${{ secrets.STG_APP_DIR }}"
 
-            cd server/laravel
+            cd app/server/laravel
 
             php artisan migrate --force
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan cache:clear
             php artisan config:cache
             php artisan route:cache
 
