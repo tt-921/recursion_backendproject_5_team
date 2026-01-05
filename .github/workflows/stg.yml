@@ -155,16 +155,18 @@ jobs:
       - name: Upload files to EC2 (rsync)
         run: |
           # 1) Deploy Laravel (server/laravel -> app/server/laravel)
-          rsync -az --delete \
+          rsync -az --delete --omit-dir-times --no-perms --no-owner --no-group \
             --exclude ".env" \
+            --exclude "storage/" \
             --exclude "storage/**" \
+            --exclude "bootstrap/cache/" \
             --exclude "bootstrap/cache/**" \
             -e "ssh -i ~/.ssh/id_key" \
             server/laravel/ \
             ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}/app/server/laravel/
 
           # 2) Deploy Vite build artifacts (client/dist -> frontend/dist)
-          rsync -az --delete \
+          rsync -az --delete --omit-dir-times --no-perms --no-owner --no-group \
             -e "ssh -i ~/.ssh/id_key" \
             client/dist/ \
             ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}/frontend/dist/
