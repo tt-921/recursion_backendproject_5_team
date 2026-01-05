@@ -126,7 +126,7 @@ jobs:
           coverage: none
 
       - name: Build backend vendor
-        working-directory: app/server/laravel
+        working-directory: server/laravel
         run: |
           composer install --no-dev --no-progress --prefer-dist --no-interaction --optimize-autoloader
 
@@ -154,17 +154,20 @@ jobs:
 
       - name: Upload files to EC2 (rsync)
         run: |
+          # 1) Deploy Laravel (server/laravel -> app/server/laravel)
           rsync -az --delete \
-            --exclude ".git" \
-            --exclude ".github" \
-            --exclude "node_modules/**" \
-            --exclude "client/node_modules/**" \
-            --exclude "app/server/laravel/.env" \
-            --exclude "app/server/laravel/storage/**" \
-            --exclude "app/server/laravel/bootstrap/cache/**" \
+            --exclude ".env" \
+            --exclude "storage/**" \
+            --exclude "bootstrap/cache/**" \
             -e "ssh -i ~/.ssh/id_key" \
-            ./ \
-            ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}
+            server/laravel/ \
+            ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}/app/server/laravel/
+
+          # 2) Deploy Vite build artifacts (client/dist -> frontend/dist)
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/id_key" \
+            client/dist/ \
+            ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}/frontend/dist/
 
       - name: Run remote commands (migrate + cache + reload)
         run: |
