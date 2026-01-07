@@ -17,6 +17,7 @@ export const fetchUser = async (): Promise<User | null> => {
     console.error('fetchUser error:', err);
     return null;
   }
+  return null;
 };
 
 // サインアップ

@@ -13,7 +13,7 @@ import ProductDetail from './pages/ProductDetail';
 import AdminCategoryList from '@/pages/admin/AdminCategoryList';
 import AdminCategoryCreate from '@/pages/admin/AdminCategoryCreate';
 import AdminCategoryEdit from '@/pages/admin/AdminCategoryEdit';
-import FavoriteList from './pages/favoriteList';
+import FavoriteList from './pages/FavoriteList';
 import Cart from './pages/Cart';
 
 function App() {

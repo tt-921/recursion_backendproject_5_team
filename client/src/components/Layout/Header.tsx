@@ -8,22 +8,27 @@ import {
 import { Input } from '@/components/ui/input';
 import { ChevronRight, Coins, Heart, History, Search, ShoppingCart, User } from 'lucide-react';
 import { Button } from '../ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { useAtom } from "jotai";
-import { userAtom } from "@/atoms/authAtoms";
-import { fetchUser, logout } from "@/services/authService";
-import { searchProductsBy } from "@/services/productService";
-import type { Product } from "@/types/ProductType";
-import type { User as UserType } from '@/types/authTypes';
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { useAtom } from 'jotai';
+import { userAtom } from '@/atoms/authAtoms';
+import { fetchUser, logout } from '@/services/authService';
+import { searchProductsBy } from '@/services/productService';
+import type { Product } from '@/types/ProductType';
 
 function Header() {
   const [user, setUser] = useAtom(userAtom);
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  
+
   useEffect(() => {
     fetchUser().then(setUser);
   }, []);
@@ -41,7 +46,7 @@ function Header() {
   const handleSearchTermChange = async (term: string) => {
     setSearchTerm(term);
 
-    if (term === "") {
+    if (term === '') {
       setSearchResults([]);
       setIsOpen(false);
       return;
@@ -55,7 +60,6 @@ function Header() {
       console.error(err);
     }
   };
-
 
   return (
     <>

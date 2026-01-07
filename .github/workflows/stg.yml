@@ -1,0 +1,187 @@
+name: stg CI/CD
+
+on:
+  push:
+    branches: [stg]
+  pull_request:
+    branches: [stg]
+  workflow_dispatch:
+
+concurrency:
+  group: stg-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    services:
+      db_test:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_root_pw
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_pw
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -ptest_root_pw"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo_mysql
+          coverage: none
+
+      - name: Install Composer dependencies
+        working-directory: server/laravel
+        run: |
+          cp .env.example .env
+          composer install --no-progress --prefer-dist --no-interaction
+          php artisan key:generate --no-interaction
+
+      - name: Run database migrations
+        working-directory: server/laravel
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: test_db
+          DB_USERNAME: root
+          DB_PASSWORD: test_root_pw
+        run: php artisan migrate --force
+
+      - name: Run backend tests
+        working-directory: server/laravel
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: test_db
+          DB_USERNAME: root
+          DB_PASSWORD: test_root_pw
+        run: php artisan test
+
+  front-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Build frontend
+        env:
+          VITE_API_URL: /api
+        run: |
+          cd client
+          npm run build
+
+  deploy:
+    name: Deploy to EC2 (stg)
+    runs-on: ubuntu-latest
+    needs: [backend-test, front-build]
+    if: >-
+      ${{
+        (
+          ((github.event_name == 'push' && github.ref == 'refs/heads/stg') ||
+           (github.event_name == 'workflow_dispatch'))
+          && needs.backend-test.result == 'success'
+          && needs.front-build.result == 'success'
+        )
+      }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo_mysql
+          coverage: none
+
+      - name: Build backend vendor
+        working-directory: server/laravel
+        run: |
+          composer install --no-dev --no-progress --prefer-dist --no-interaction --optimize-autoloader
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Build frontend dist
+        working-directory: client
+        env:
+          VITE_API_URL: /api
+        run: npm run build
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STG_SSH_KEY }}" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          ssh-keyscan -H "${{ secrets.STG_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload files to EC2 (rsync)
+        run: |
+          # 1) Deploy Laravel (server/laravel -> app/server/laravel)
+          rsync -az --delete --omit-dir-times --no-perms --no-owner --no-group \
+            --exclude ".env" \
+            --exclude "storage/" \
+            --exclude "storage/**" \
+            --exclude "bootstrap/cache/" \
+            --exclude "bootstrap/cache/**" \
+            -e "ssh -i ~/.ssh/id_key" \
+            server/laravel/ \
+            ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}/app/server/laravel/
+
+          # 2) Deploy Vite build artifacts (client/dist -> frontend/dist)
+          rsync -az --delete --omit-dir-times --no-perms --no-owner --no-group \
+            -e "ssh -i ~/.ssh/id_key" \
+            client/dist/ \
+            ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }}:${{ secrets.STG_APP_DIR }}/frontend/dist/
+
+      - name: Run remote commands (migrate + cache + reload)
+        run: |
+          ssh -i ~/.ssh/id_key ${{ secrets.STG_USER }}@${{ secrets.STG_HOST }} << EOF
+            set -e
+            cd "${{ secrets.STG_APP_DIR }}"
+
+            cd app/server/laravel
+            rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php bootstrap/cache/routes-*.php
+
+            php artisan migrate --force
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan cache:clear
+            php artisan config:cache
+            php artisan route:cache
+
+            sudo systemctl reload php8.2-fpm || true
+            sudo systemctl reload nginx || true
+          EOF

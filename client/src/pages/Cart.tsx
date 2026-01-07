@@ -1,45 +1,21 @@
-import Heading from "@/components/Heading";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "../components/ui/select";
-import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-} from "../components/ui/dialog";
-import { Skeleton } from "../components/ui/skeleton";
-import { Coins, ChevronRight, X } from "lucide-react";
-import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { ChevronRight, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface CartItem {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
 }
 
 interface RecommendedProduct {
-    id: string;
-    name: string;
-    description: string;
-    rating: number;
-    imageUrl?: string;
-}
-
-interface CartResponse {
-    items: CartItem[];
-    subtotal: number;
-    shippingFee: number;
+  id: string;
+  name: string;
+  description: string;
+  rating: number;
+  imageUrl?: string;
 }
 
 // ===== モックデータ（後でAPI呼び出しに置き換える） =====
@@ -50,44 +26,64 @@ const mockCartData: CartItem[] = [
     name: '商品名が入ります',
     description: '商品説明や値段が入ります。商品説明や値段が入ります。',
     price: 18200,
-    quantity: 1
+    quantity: 1,
   },
   {
     id: '2',
     name: '商品名が入ります',
     description: '商品説明や値段が入ります。商品説明や値段が入ります。',
     price: 18200,
-    quantity: 1
+    quantity: 1,
   },
   {
     id: '3',
     name: '商品名が入ります',
     description: '商品説明や値段が入ります。商品説明や値段が入ります。',
     price: 18200,
-    quantity: 1
+    quantity: 1,
   },
   {
     id: '4',
     name: '商品名が入ります',
     description: '商品説明や値段が入ります。商品説明や値段が入ります。',
     price: 18200,
-    quantity: 1
-  }
+    quantity: 1,
+  },
 ];
 
 // ダミーの推奨商品データ
 const mockRecommendedData: RecommendedProduct[] = [
-  { id: 'r1', name: '商品名が入ります', description: '商品説明や値段が入ります。商品説明や値段が入ります。', rating: 4 },
-  { id: 'r2', name: '商品名が入ります', description: '商品説明や値段が入ります。商品説明や値段が入ります。', rating: 4 },
-  { id: 'r3', name: '商品名が入ります', description: '商品説明や値段が入ります。商品説明や値段が入ります。', rating: 4 },
-  { id: 'r4', name: '商品名が入ります', description: '商品説明や値段が入ります。商品説明や値段が入ります。', rating: 4 }
+  {
+    id: 'r1',
+    name: '商品名が入ります',
+    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
+    rating: 4,
+  },
+  {
+    id: 'r2',
+    name: '商品名が入ります',
+    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
+    rating: 4,
+  },
+  {
+    id: 'r3',
+    name: '商品名が入ります',
+    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
+    rating: 4,
+  },
+  {
+    id: 'r4',
+    name: '商品名が入ります',
+    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
+    rating: 4,
+  },
 ];
 
 // ===== モックAPI関数（後で実際のAPI呼び出しに置き換える） =====
 /**
  * カート情報を取得する関数
  * 将来的には以下のように置き換えます：
- * 
+ *
  * const fetchCartItems = async (): Promise<CartItem[]> => {
  *   const response = await fetch('/api/cart');
  *   const data = await response.json();
@@ -106,7 +102,7 @@ const fetchCartItems = async (): Promise<CartItem[]> => {
 /**
  * カートから商品を削除するAPI関数
  * 将来的には以下のように置き換えます：
- * 
+ *
  * const removeCartItem = async (id: string): Promise<void> => {
  *   await fetch(`/api/cart/${id}`, { method: 'DELETE' });
  * };
@@ -137,13 +133,13 @@ const Cart: React.FC = () => {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        
+
         // 並列でデータを取得（Promise.all を使用）
         const [cartData, recommendedData] = await Promise.all([
           fetchCartItems(),
-          fetchRecommendedProducts()
+          fetchRecommendedProducts(),
         ]);
-        
+
         setCartItems(cartData);
         setRecommendedProducts(recommendedData);
       } catch (error) {
@@ -161,8 +157,8 @@ const Cart: React.FC = () => {
   const removeFromCart = async (id: string): Promise<void> => {
     try {
       // 楽観的UI更新：APIを待たずにUIを更新
-      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-      
+      setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+
       // バックエンドで削除
       await removeCartItem(id);
     } catch (error) {
@@ -172,7 +168,7 @@ const Cart: React.FC = () => {
   };
 
   // 商品小計の計算
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal + shippingFee;
 
   // 数値を日本円フォーマットに変換
@@ -185,7 +181,7 @@ const Cart: React.FC = () => {
     return (
       <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star} className={star <= rating ? "text-yellow-400" : "text-gray-300"}>
+          <span key={star} className={star <= rating ? 'text-yellow-400' : 'text-gray-300'}>
             ★
           </span>
         ))}
@@ -212,7 +208,7 @@ const Cart: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold mb-6 border-l-4 border-black pl-3">カート</h2>
-            
+
             {cartItems.length === 0 ? (
               <p className="text-center text-gray-500 py-8">カートは空です</p>
             ) : (
@@ -220,20 +216,24 @@ const Cart: React.FC = () => {
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex gap-4 pb-4 border-b last:border-b-0">
                     {/* 削除ボタン */}
-                    <button 
+                    <button
                       onClick={() => removeFromCart(item.id)}
                       className="self-start p-1 hover:bg-gray-100 rounded-full"
                     >
                       <X className="w-5 h-5" />
                     </button>
-                    
+
                     {/* 商品画像 */}
                     <div className="w-24 h-24 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
-                      <svg className="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                      <svg
+                        className="w-12 h-12 text-gray-400"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
                       </svg>
                     </div>
-                    
+
                     {/* 商品情報 */}
                     <div className="flex-1">
                       <h3 className="font-bold mb-1">{item.name}</h3>
@@ -283,25 +283,26 @@ const Cart: React.FC = () => {
           <h2 className="text-xl font-bold mb-6 border-l-4 border-black pl-3">
             関覧履歴に基づくおすすめ商品
           </h2>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {recommendedProducts.map((product) => (
-              <div key={product.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div
+                key={product.id}
+                className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
                 {/* 商品画像 */}
                 <div className="w-full aspect-square bg-gray-200 rounded mb-3 flex items-center justify-center">
                   <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
                   </svg>
                 </div>
-                
+
                 {/* 商品名 */}
                 <h3 className="font-bold mb-2">{product.name}</h3>
-                
+
                 {/* 星評価 */}
-                <div className="mb-2">
-                  {renderStars(product.rating)}
-                </div>
-                
+                <div className="mb-2">{renderStars(product.rating)}</div>
+
                 {/* 商品説明 */}
                 <p className="text-sm text-gray-600">{product.description}</p>
               </div>

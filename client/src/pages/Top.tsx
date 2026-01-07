@@ -89,6 +89,7 @@ function Top() {
         const mapped: Product[] = list.map((p: any) => ({
           id: p.id ?? p.slug ?? '',
           title: p.title ?? p.name ?? '商品',
+          description: p.description ?? '',
           imageUrl: p.thumbnail_url ?? p.imageUrl ?? null,
         }));
         setProducts(mapped);

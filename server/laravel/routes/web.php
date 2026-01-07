@@ -12,6 +12,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\WishlistController;
 
+
+Route::prefix('api')->group(function () {
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -34,7 +37,6 @@ Route::get('/cart',    [CartController::class, 'index']);
 Route::post('/cart',   [CartController::class, 'store']);
 Route::put('/cart',    [CartController::class, 'update']);
 Route::delete('/cart', [CartController::class, 'destroy']);
-
 
 // 認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
@@ -59,4 +61,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/wishlist', [WishlistController::class, 'add']);
     Route::delete('/wishlist', [WishlistController::class, 'remove']);
 
+});
 });

@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Heading from "@/components/Heading";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { createProduct } from "@/services/admin/productService";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Heading from '@/components/Heading';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { createProduct } from '@/services/admin/productService';
 
 const AdminProductCreate = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState<string>('');
+  const [status, setStatus] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const AdminProductCreate = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError("商品名を入力してください");
+      setError('商品名を入力してください');
       return;
     }
 
@@ -27,16 +27,16 @@ const AdminProductCreate = () => {
     try {
       const payload = {
         title: title.trim(),
-        description: description.trim() || null,
+        description: description.trim(),
         category_id: categoryId ? Number(categoryId) : null,
         status: status || null,
       };
 
       await createProduct(payload);
-      navigate("/admin/products");
+      navigate('/admin/products');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      setError(msg || "作成に失敗しました");
+      setError(msg || '作成に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -70,12 +70,20 @@ const AdminProductCreate = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>カテゴリID</Label>
-              <Input value={categoryId} onChange={(e) => setCategoryId(e.target.value)} type="number" />
+              <Input
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                type="number"
+              />
             </div>
 
             <div>
               <Label>ステータス</Label>
-              <Input value={status} onChange={(e) => setStatus(e.target.value)} placeholder="公開/下書き など" />
+              <Input
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                placeholder="公開/下書き など"
+              />
             </div>
           </div>
 
