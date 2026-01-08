@@ -19,9 +19,9 @@ class FavoriteControllerTest extends TestCase
      */
     public function test_guest_cannnot_access_favorites()
     {
-        $this->getJson('/favorites')->assertUnauthorized();
-        $this->postJson('/favorites',['product_id' => 1])->assertUnauthorized();
-        $this->deleteJson('/favorites/1')->assertUnauthorized();
+        $this->apiGet('favorites')->assertUnauthorized();
+        $this->apiPost('favorites', ['product_id' => 1])->assertUnauthorized();
+        $this->apiDelete('favorites/1')->assertUnauthorized();
     }
 
     public function test_user_can_get_own_favorites()
@@ -42,7 +42,7 @@ class FavoriteControllerTest extends TestCase
         $userA->favoriteProducts()->syncWithoutDetaching([$productA->id]);
         $userB->favoriteProducts()->syncWithoutDetaching([$productB->id]);
 
-        $res = $this->actingAs($userA,'sanctum')->getJson('/favorites');
+        $res = $this->actingAs($userA, 'sanctum')->apiGet('favorites');
         $res->assertOk()->assertJsonFragment([
             'id' => $productA->id,
         ])->assertJsonMissing([
@@ -58,7 +58,7 @@ class FavoriteControllerTest extends TestCase
         'category_id' => $category->id,
         ]);
 
-        $res = $this->actingAs($user,'sanctum')->postJson('/favorites',[
+        $res = $this->actingAs($user, 'sanctum')->apiPost('favorites', [
             'product_id' => $product->id,
         ]);
 
@@ -82,7 +82,7 @@ class FavoriteControllerTest extends TestCase
 
         $user->favoriteProducts()->syncWithoutDetaching([$product->id]);
 
-        $res = $this->actingAs($user,'sanctum')->deleteJson("/favorites/{$product->id}");
+        $res = $this->actingAs($user, 'sanctum')->apiDelete("favorites/{$product->id}");
         $res->assertOk()->assertJson([
             'message' => 'お気に入りから削除しました。',
         ]);

@@ -28,7 +28,7 @@ class ProductControllerTest extends TestCase
     {
 
         Product::factory()->count(2)->create(['category_id' => 1]);
-        $response = $this->get('/admin/products');
+        $response = $this->adminGet('products');
         $response->assertOk()->assertJsonCount(2);
     }
 
@@ -50,7 +50,7 @@ class ProductControllerTest extends TestCase
             'released_at' => now()->toDateTimeString(),
         ];
 
-        $response = $this->postJson('/admin/products', $postData);
+        $response = $this->adminPost('products', $postData);
         $response->assertCreated()->assertJsonFragment(['title' => '新規商品']);
         $this->assertDatabaseHas('products', ['title' => '新規商品']);
     }
@@ -72,14 +72,14 @@ class ProductControllerTest extends TestCase
             'released_at' => now()->toDateTimeString(),
         ];
 
-        $response = $this->postJson('/admin/products', $postDataWithoutTitle);
+        $response = $this->adminPost('products', $postDataWithoutTitle);
         $response->assertStatus(422);
     }
 
     public function test_product_show()
     {
         $product = Product::factory()->create(['category_id' => 1]);
-        $response = $this->get("/admin/products/{$product->id}");
+        $response = $this->adminGet("products/{$product->id}");
         $response->assertOk()->assertJsonFragment(['id' => $product->id]);
     }
 
@@ -88,7 +88,7 @@ class ProductControllerTest extends TestCase
         $product = Product::factory()->create(['category_id' => 1, 'title'=>'旧タイトル']);
         $updatedData = $product->toArray();
         $updatedData['title'] = '新タイトル';
-        $response = $this->putJson("/admin/products/{$product->id}", $updatedData);
+        $response = $this->adminPut("products/{$product->id}", $updatedData);
         $response->assertOk()->assertJsonFragment(['title' => '新タイトル']);
         $this->assertDatabaseHas('products', ['id' => $product->id, 'title' => '新タイトル']);
     }
@@ -98,7 +98,7 @@ class ProductControllerTest extends TestCase
         $product = Product::factory()->create(['category_id' => 1, 'title'=>'旧タイトル']);
         $updatedData = $product->toArray();
         $updatedData['title'] = null;
-        $response = $this->putJson("/admin/products/{$product->id}", $updatedData);
+        $response = $this->adminPut("products/{$product->id}", $updatedData);
         $response->assertStatus(422);
         $this->assertDatabaseHas('products', ['id' => $product->id, 'title' => '旧タイトル']);
     }
@@ -106,7 +106,7 @@ class ProductControllerTest extends TestCase
     public function test_product_delete()
     {
         $product = Product::factory()->create(['category_id' => 1]);
-        $response = $this->delete("/admin/products/{$product->id}");
+        $response = $this->adminDelete("products/{$product->id}");
         $response->assertOk();
         $this->assertDatabaseMissing('products', ['id' => $product->id]);
     }
@@ -134,12 +134,12 @@ class ProductControllerTest extends TestCase
             'released_at' => now()->toDateTimeString(),
         ];
 
-        $createResponse = $this->postJson('/admin/products', $postData);
+        $createResponse = $this->adminPost('products', $postData);
         $createResponse->assertForbidden();
 
         // 削除もガードされる
         $product = Product::factory()->create(['category_id' => 1]);
-        $deleteResponse = $this->delete("/admin/products/{$product->id}");
+        $deleteResponse = $this->adminDelete("products/{$product->id}");
         $deleteResponse->assertForbidden();
     }
 }

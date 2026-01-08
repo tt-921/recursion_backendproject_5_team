@@ -24,7 +24,7 @@ class CategoryControllerTest extends TestCase{
     public function test_category_index()
     {
         Category::factory()->count(2)->create();
-        $response = $this->get('/admin/categories');
+        $response = $this->adminGet('categories');
         $response->assertOk()->assertJsonCount(2);
     }
 
@@ -34,7 +34,7 @@ class CategoryControllerTest extends TestCase{
             'name' => '新規カテゴリ',
         ];
 
-        $response = $this->postJson('/admin/categories', $postData);
+        $response = $this->adminPost('categories', $postData);
         $response-> assertCreated()->assertJsonFragment(['name' => '新規カテゴリ']);
         $this->assertDatabaseHas('categories', ['name' => '新規カテゴリ',]);
     }
@@ -45,14 +45,14 @@ class CategoryControllerTest extends TestCase{
             // 'name' => 'カテゴリ名がない場合',
         ];
 
-        $response = $this->postJson('/admin/categories', $postDataWithoutName);
+        $response = $this->adminPost('categories', $postDataWithoutName);
         $response->assertStatus(422);
         $this->assertDatabaseMissing('categories', ['name' => null]);
     }
 
     public function test_category_show(){
         $category = Category::factory()->create();
-        $response = $this->get("/admin/categories/{$category->id}");
+        $response = $this->adminGet("categories/{$category->id}");
         $response->assertOk()->assertJsonFragment(['id' => $category->id,]);
     }
 
@@ -63,7 +63,7 @@ class CategoryControllerTest extends TestCase{
             'name' => '更新後カテゴリ名',
         ];
 
-        $response = $this->putJson("/admin/categories/{$category->id}", $updateData);
+        $response = $this->adminPut("categories/{$category->id}", $updateData);
         $response->assertOk()->assertJsonFragment(['name' => '更新後カテゴリ名',]);
         $this->assertDatabaseHas('categories', ['id' => $category->id, 'name' => '更新後カテゴリ名',]);
     }
@@ -75,7 +75,7 @@ class CategoryControllerTest extends TestCase{
             'name' => null, // 無効なデータ（空の名前）
         ];
 
-        $response = $this->putJson("/admin/categories/{$category->id}", $updateData);
+        $response = $this->adminPut("categories/{$category->id}", $updateData);
         $response->assertStatus(422);
         $this->assertDatabaseHas('categories', ['id' => $category->id, 'name' => '更新前カテゴリ名',]);
     }
@@ -83,7 +83,7 @@ class CategoryControllerTest extends TestCase{
     public function test_category_delete(){
         $category = Category::factory()->create();
 
-        $response = $this->deleteJson("/admin/categories/{$category->id}");
+        $response = $this->adminDelete("categories/{$category->id}");
         $response->assertOk();
         $this->assertDatabaseMissing('categories', ['id' => $category->id,]);
     }
@@ -97,17 +97,17 @@ class CategoryControllerTest extends TestCase{
         $postData = [
             'name' => 'ガードテストカテゴリ',
         ];
-        $createResponse = $this->postJson('/admin/categories', $postData);
+        $createResponse = $this->adminPost('categories', $postData);
         $createResponse->assertForbidden();
 
         $category = Category::factory()->create(['name' => '既存カテゴリ']);
         $updateData = [
             'name' => '更新後カテゴリ名',
         ];
-        $updateResponse = $this->putJson("/admin/categories/{$category->id}", $updateData);
+        $updateResponse = $this->adminPut("categories/{$category->id}", $updateData);
         $updateResponse->assertForbidden();
 
-        $deleteResponse = $this->deleteJson("/admin/categories/{$category->id}");
+        $deleteResponse = $this->adminDelete("categories/{$category->id}");
         $deleteResponse->assertForbidden();
     }
 
