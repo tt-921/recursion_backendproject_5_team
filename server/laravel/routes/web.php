@@ -14,6 +14,9 @@ use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\CheckoutController;
 
+
+Route::prefix('api')->group(function () {
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -36,6 +39,7 @@ Route::get('/cart',    [CartController::class, 'index']);
 Route::post('/cart',   [CartController::class, 'store']);
 Route::put('/cart',    [CartController::class, 'update']);
 Route::delete('/cart', [CartController::class, 'destroy']);
+
 // Stripe決済
 Route::post('/checkout', [CheckoutController::class, 'create']);
 Route::get('/success', function () { return '支払い成功!';})->name('checkout-success');
@@ -67,4 +71,5 @@ Route::middleware('auth:sanctum')->group(function () {
     // 注文履歴
     Route::get('/order_history', [OrderHistoryController::class, 'index']);
 
+});
 });
