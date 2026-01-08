@@ -36,7 +36,7 @@ class CartControllerTest extends TestCase
     {
         [$product, $price] = $this->createProductAndPrice();
 
-        $response = $this->postJson('/cart', [
+        $response = $this->apiPost('cart', [
             'product_id' => $product->id,
             'price_id' => $price->id,
             'quantity' => 2,
@@ -61,7 +61,7 @@ class CartControllerTest extends TestCase
     {
         [$product, $price] = $this->createProductAndPrice();
 
-        $createResponse = $this->postJson('/cart', [
+        $createResponse = $this->apiPost('cart', [
             'product_id' => $product->id,
             'price_id' => $price->id,
             'quantity' => 1,
@@ -71,7 +71,7 @@ class CartControllerTest extends TestCase
 
         $itemId = $createResponse->json('items.0.id');
         
-        $updateResponse = $this->withCookie('cart_token', $token)->withCredentials()->putJson('/cart', [
+        $updateResponse = $this->withCookie('cart_token', $token)->withCredentials()->apiPut('cart', [
             'cart_item_id' => $itemId,
             'quantity' => 4,
         ]);
@@ -82,7 +82,7 @@ class CartControllerTest extends TestCase
                 'quantity' => 4,
             ]);
 
-        $deleteResponse = $this->withCookie('cart_token', $token)->withCredentials()->deleteJson('/cart', [
+        $deleteResponse = $this->withCookie('cart_token', $token)->withCredentials()->apiDelete('cart', [
             'cart_item_id' => $itemId,
         ]);
 
@@ -98,7 +98,7 @@ class CartControllerTest extends TestCase
     {
         [$guestProduct, $guestPrice] = $this->createProductAndPrice();
 
-        $guestResponse = $this->postJson('/cart', [
+        $guestResponse = $this->apiPost('cart', [
             'product_id' => $guestProduct->id,
             'price_id' => $guestPrice->id,
             'quantity' => 2,
@@ -121,7 +121,7 @@ class CartControllerTest extends TestCase
 
         $response = $this->withCookie('cart_token', $guestToken)->withCredentials()
             ->actingAs($user)
-            ->getJson('/cart');
+            ->apiGet('cart');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['user_id' => $user->id])

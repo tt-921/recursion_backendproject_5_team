@@ -27,7 +27,7 @@ class AuthTest extends TestCase
         ]);
 
         
-        $response = $this->postJson('/login', [
+        $response = $this->apiPost('login', [
             'email' => 'test@example.com',
             'password' => 'password123',
         ]);
@@ -48,7 +48,7 @@ class AuthTest extends TestCase
             'password' => Hash::make('password123'),
         ]);
 
-        $response = $this->withSession([])->postJson('/login', [
+        $response = $this->withSession([])->apiPost('login', [
             'email' => 'test@example.com',
             'password' => 'wrongpassword',
         ]);
@@ -71,7 +71,7 @@ class AuthTest extends TestCase
             'password_confirmation' => 'password123',
         ];
 
-        $response = $this->withSession([])->postJson('/register', $userData);
+        $response = $this->withSession([])->apiPost('register', $userData);
 
         $response->assertStatus(201)
                 ->assertJson([
@@ -106,7 +106,7 @@ class AuthTest extends TestCase
             'password_confirmation' => '456',
         ];
 
-        $response = $this->withSession([])->postJson('/register', $invalidData);
+        $response = $this->withSession([])->apiPost('register', $invalidData);
 
         $response->assertStatus(422)
                 ->assertJsonValidationErrors(['name', 'email', 'password']);
@@ -128,7 +128,7 @@ class AuthTest extends TestCase
             'password_confirmation' => 'password123',
         ];
 
-        $response = $this->postJson('/register', $userData);
+        $response = $this->apiPost('register', $userData);
 
         $response->assertStatus(422)
                 ->assertJsonValidationErrors(['email']);
@@ -142,7 +142,7 @@ class AuthTest extends TestCase
         $user = User::factory()->create();
 
         // ログイン
-        $loginResponse = $this->postJson('/login', [
+        $loginResponse = $this->apiPost('login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -150,7 +150,7 @@ class AuthTest extends TestCase
         $loginResponse->assertStatus(200);
 
         // ログアウト
-        $logoutResponse = $this->postJson('/logout');
+        $logoutResponse = $this->apiPost('logout');
 
         $logoutResponse->assertStatus(200)
                       ->assertJson([
@@ -163,7 +163,7 @@ class AuthTest extends TestCase
      */
     public function test_unauthenticated_user_cannot_logout()
     {
-        $response = $this->postJson('/logout');
+        $response = $this->apiPost('logout');
 
         $response->assertStatus(401);
     }
@@ -180,7 +180,7 @@ class AuthTest extends TestCase
             'password_confirmation' => 'differentpassword',
         ];
 
-        $response = $this->postJson('/register', $userData);
+        $response = $this->apiPost('register', $userData);
 
         $response->assertStatus(422)
                 ->assertJsonValidationErrors(['password']);
@@ -198,7 +198,7 @@ class AuthTest extends TestCase
             'password_confirmation' => '123',
         ];
 
-        $response = $this->postJson('/register', $userData);
+        $response = $this->apiPost('register', $userData);
 
         $response->assertStatus(422)
                 ->assertJsonValidationErrors(['password']);
@@ -216,14 +216,14 @@ class AuthTest extends TestCase
             'password_confirmation' => 'password123',
         ];
 
-        $response = $this->postJson('/register', $userData);
+        $response = $this->apiPost('register', $userData);
 
         $response->assertStatus(201);
 
         // 登録後、ユーザー情報を取得できることを確認
         $user = User::where('email', 'john@example.com')->first();
         $this->actingAs($user, 'web'); // actingAsで認証済みを仮定
-        $userResponse = $this->getJson('/user');
+        $userResponse = $this->apiGet('user');
         
         $userResponse->assertStatus(200)
                     ->assertJson([
@@ -247,7 +247,7 @@ class AuthTest extends TestCase
         ];
 
         // ユーザー登録APIを呼び出す
-        $response = $this->postJson('/register', $userData);
+        $response = $this->apiPost('register', $userData);
 
         $response->assertStatus(201);
 

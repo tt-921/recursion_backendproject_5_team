@@ -24,7 +24,7 @@ class PublicProductControllerTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $response = $this->get('/products');
+        $response = $this->apiGet('products');
         $response->assertOk();
         $response->assertJsonFragment(['id' => $published->id]);
         $response->assertJsonMissing(['id' => $draft->id]);
@@ -42,10 +42,10 @@ class PublicProductControllerTest extends TestCase
             'category_id' => $category->id,
             'status' => 'draft',
         ]);
-        $responsePublished = $this->get("/products/{$published->id}");
+        $responsePublished = $this->apiGet("products/{$published->id}");
         $responsePublished->assertOk();
         $responsePublished->assertJsonFragment(['id' => $published->id]);
-        $responseDraft = $this->get("/products/{$draft->id}");
+        $responseDraft = $this->apiGet("products/{$draft->id}");
         $responseDraft->assertStatus(404);
     }
 
@@ -76,7 +76,7 @@ class PublicProductControllerTest extends TestCase
             'title' => 'Alpha Draft',
         ]);
 
-        $response = $this->getJson('/products/search?keyword=alpha');
+        $response = $this->apiGet('products/search?keyword=alpha');
 
         $response->assertOk();
         $response->assertJsonPath('count', 2);
@@ -90,7 +90,7 @@ class PublicProductControllerTest extends TestCase
 
     public function test_product_search_requires_keyword()
     {
-        $response = $this->getJson('/products/search');
+        $response = $this->apiGet('products/search');
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['keyword']);

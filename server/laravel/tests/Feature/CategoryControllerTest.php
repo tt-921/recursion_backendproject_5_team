@@ -13,14 +13,14 @@ class CategoryControllerTest extends TestCase
     public function test_category_index()
     {
         Category::factory()->count(2)->create();
-        $response = $this->get('/categories');
+        $response = $this->apiGet('categories');
         $response->assertOk()->assertJsonCount(2);
     }
 
     public function test_category_show()
     {
         $category = Category::factory()->create();
-        $response = $this->get("/categories/{$category->id}");
+        $response = $this->apiGet("categories/{$category->id}");
         $response->assertOk()->assertJsonFragment(['id' => $category->id,]);
     }
 }

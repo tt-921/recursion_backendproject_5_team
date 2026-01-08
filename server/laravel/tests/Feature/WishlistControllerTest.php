@@ -32,7 +32,7 @@ class WishlistControllerTest extends TestCase
         $product = $this->createProduct();
 
         $response = $this->actingAs($user)
-            ->postJson('/wishlist',[
+            ->apiPost('wishlist',[
             'product_id' => $product->id,
             'name' => 'test_name',
             ]);
@@ -62,7 +62,7 @@ class WishlistControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->deleteJson('/wishlist',[
+            ->apiDelete('wishlist',[
                 'product_id' => $product->id,
         ]);
 
@@ -92,7 +92,7 @@ class WishlistControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->postJson('/wishlist', [
+            ->apiPost('wishlist', [
                 'product_id' => $product->id,
             ]);
 
