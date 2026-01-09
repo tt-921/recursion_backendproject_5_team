@@ -41,7 +41,7 @@ function App() {
           <Route path="categories/:id" element={<AdminCategoryEdit />} />
           <Route path="categories/:id/edit" element={<AdminCategoryEdit />} />
         </Route>
-      </Layout>
+      </Routes>
     </Router>
   );
 }

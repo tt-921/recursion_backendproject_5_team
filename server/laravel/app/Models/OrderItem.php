@@ -5,22 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class WishlistItem extends Model
+class OrderItem extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
 
     protected $fillable = [
-        'wishlist_id',
+        'order_id',
         'product_id',
-        'is_deleted'
+        'price_id',
+        'quantity',
+        'unit_amount',
+        'created_at',
     ];
-
-    public function wishlist()
-    {
-        return $this->belongsTo(Wishlist::class);
-    }
 
     public function product()
     {
