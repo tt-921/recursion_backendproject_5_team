@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProduct;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\WishlistController;
 
 
@@ -60,6 +61,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist', [WishlistController::class, 'add']);
     Route::delete('/wishlist', [WishlistController::class, 'remove']);
+
+    // 注文履歴
+    Route::get('/order_history', [OrderHistoryController::class, 'index']);
 
 });
 });
