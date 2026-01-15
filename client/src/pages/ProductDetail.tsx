@@ -11,12 +11,12 @@ import {
 import { Star } from "lucide-react";
 import Heading from "@/components/Heading";
 import { getPublicProduct } from "@/services/productService";
-import type { ProductDetail } from "@/types/ProductDetailType";
+import type { ProductDetail as ProductDetailType } from "@/types/ProductDetailType";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [selectedQty, setSelectedQty] = useState("1");
-  const [product, setProduct] = useState<ProductDetail | null>(null);
+  const [product, setProduct] = useState<ProductDetailType | null>(null);
   // const [isWishlisted, setIsWishlisted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
