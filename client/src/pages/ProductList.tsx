@@ -11,7 +11,6 @@ import type { Category } from '@/types/CategoryType';
 import { listPublicProducts } from '@/services/productService';
 import { listPublicCategories } from '@/services/categoryService';
 import { addFavorite, removeFavorite, listFavorites } from '@/services/favoriteService';
-import { API_URL } from '@/config/api';
 
 // ページ専用 ProductCard コンポーネント
 const ProductCard = ({

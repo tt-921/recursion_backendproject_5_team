@@ -1,5 +1,6 @@
 import type { Product } from '@/types/ProductType';
 import type { SearchResult } from '@/types/SearchResultType';
+import type { ProductDetailResponse } from '@/types/ProductDetailType';
 import { API_URL } from '@/config/api';
 
 function makeError(status: number, message?: string) {
@@ -20,21 +21,20 @@ export const listPublicProducts = async (): Promise<Product[]> => {
   return Array.isArray(data) ? data : data.data || [];
 };
 
-export const getPublicProduct = async (id: number | string): Promise<Product> => {
-  const res = await fetch(`${API_URL}/products/${id}`, {
+export const getPublicProduct = async (id: number | string): Promise<ProductDetailResponse> => {
+  const res = await fetch(`${API_URL}/api/products/${id}`, {
     method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
+    headers: { Accept: 'application/json' },
   });
-  if (!res.ok) throw makeError(res.status);
 
-  const data = await res.json();
-  return data && data.id ? data : data.data;
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  const data: ProductDetailResponse = await res.json();
+  return data;
 };
 
 export const searchProductsBy = async (term: string): Promise<SearchResult> => {
-  const res = await fetch(`${API_URL}/products/search?keyword=${encodeURIComponent(term)}`, {
+  const res = await fetch(`${API_URL}/api/products/search?keyword=${encodeURIComponent(term)}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
