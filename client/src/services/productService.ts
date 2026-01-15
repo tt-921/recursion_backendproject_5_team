@@ -9,7 +9,7 @@ function makeError(status: number, message?: string) {
 }
 
 export const listPublicProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${API_URL}/products`, {
+  const res = await fetch(`${API_URL}/api/products`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });

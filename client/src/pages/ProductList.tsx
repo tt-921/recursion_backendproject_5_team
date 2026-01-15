@@ -11,6 +11,7 @@ import type { Category } from '@/types/CategoryType';
 import { listPublicProducts } from '@/services/productService';
 import { listPublicCategories } from '@/services/categoryService';
 import { addFavorite, removeFavorite, listFavorites } from '@/services/favoriteService';
+import { API_URL } from '@/config/api';
 
 // ページ専用 ProductCard コンポーネント
 const ProductCard = ({
@@ -100,14 +101,28 @@ const ProductList = () => {
       setLoading(true);
       setError(null);
       try {
-        const [productList, categoryList, favoriteList] = await Promise.all([
-          listPublicProducts(),
-          listPublicCategories(),
-          listFavorites().catch((e) => {
-            console.error('Failed to fetch favorites', e);
-            return [];
-          }),
-        ]);
+        let productList: Product[] = [];
+        try {
+          productList = await listPublicProducts();
+          console.log('productList fetched:', productList);
+        } catch (err) {
+          console.error('Failed to fetch products', err);
+        }
+
+        let categoryList: Category[] = [];
+        try {
+          categoryList = await listPublicCategories();
+        } catch (err) {
+          console.error('Failed to fetch categories', err);
+        }
+
+        let favoriteList: any[] = [];
+        try {
+          favoriteList = await listFavorites();
+        } catch (err) {
+          console.error('Failed to fetch favorites', err);
+        }
+
         setProducts(productList);
         setCategories(categoryList as Category[]);
         const initialFavoriteIds = favoriteList
@@ -115,7 +130,7 @@ const ProductList = () => {
           .filter((n) => Number.isFinite(n));
         setFavoriteIds(initialFavoriteIds);
       } catch (err: unknown) {
-        console.error(err);
+        console.error('Unexpected error', err);
         const message = err instanceof Error ? err.message : String(err);
         setError(message || 'データの取得に失敗しました');
       } finally {
@@ -124,6 +139,7 @@ const ProductList = () => {
     };
     fetchData();
   }, []);
+
 
   const selectedCategoryName = selectedCategoryId
     ? categories.find((c) => c.id === selectedCategoryId)?.name ?? 'カテゴリ'
