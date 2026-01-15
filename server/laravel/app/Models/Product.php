@@ -26,8 +26,9 @@ class Product extends Model
         'seo_tags' => 'array',
         'released_at' => 'datetime',
     ];
-
+    
     protected $hidden = ['default_price_id', 'stripe_product_id', 'creator', 'seo_tags'];
+    protected $appends = ['price'];
 
     public function scopePublished($q)
     {
@@ -43,5 +44,15 @@ class Product extends Model
     {
         return $this->belongsToMany(User::class, 'favorites')
             ->withTimestamps();
+    }
+
+    public function defaultPrice()
+    {
+        return $this->belongsTo(Price::class, 'default_price_id');
+    }
+
+    public function getPriceAttribute(): int
+    {
+        return (int) optional($this->defaultPrice)->unit_amount ?? 0;
     }
 }
