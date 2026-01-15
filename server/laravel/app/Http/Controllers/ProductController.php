@@ -30,7 +30,10 @@ class ProductController extends Controller
     public function show(Request $request, int $id)
     {
         $p = Product::published()
-            ->with(['category' => fn($qq) => $qq->select('id','name')])
+            ->with([
+                'category' => fn($qq) => $qq->select('id','name'),
+                'defaultPrice'
+            ])
             ->findOrFail($id);
 
         $is_wishlisted = false;
