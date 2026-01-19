@@ -9,19 +9,13 @@ class OrderHistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $userId = $request->input('user_id');
+        $user = $request->user();
+        if (!$user) return response()->json(['message' => 'Unauthorized'], 401);
 
-        if(!$userId){
-            return response()->json(['message' => 'User ID is required'], 400);
-        }
+        $orders = Order::where('user_id', $user->id)
+        ->with(['orderItems.product'])
+        ->get();
 
-        $orders = Order::where('user_id', $userId)
-            ->with(['orderItems.product'])
-            ->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' =>$orders
-        ]);
+        return response()->json(['status' => 'success', 'data' => $orders]);
     }
 }
