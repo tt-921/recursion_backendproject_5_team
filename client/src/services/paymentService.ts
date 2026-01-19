@@ -18,7 +18,7 @@ export const StripeCheckout = async () => {
     }
 
     // カート情報や注文情報はサーバー側で取得することを想定
-    const response = await fetch(`${API_URL}/checkout`, {
+    const response = await fetch(`${API_URL}/api/checkout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
