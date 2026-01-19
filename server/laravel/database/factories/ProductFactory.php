@@ -16,7 +16,7 @@ class ProductFactory extends Factory
             'status' => 'draft',
             'category_id' => 1,
             'creator' => $this->faker->name(),
-            'stripe_product_id' => $this->faker->unique()->numberBetween(100000,999999),
+            'stripe_product_id' => 'prod_' . $this->faker->unique()->regexify('[A-Za-z0-9]{14}'),
             'seo_tags' => [
                 'title' => $this->faker->sentence(4),
                 'description' => $this->faker->sentence(8),

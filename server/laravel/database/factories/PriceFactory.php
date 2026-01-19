@@ -18,7 +18,7 @@ class PriceFactory extends Factory
 
         return [
             'product_id' => $product->id,
-            'stripe_price_id' => $this->faker->numberBetween(100000, 999999),
+            'stripe_price_id' => 'price_' . $this->faker->unique()->regexify('[A-Za-z0-9]{14}'),
             'unit_amount' => $this->faker->numberBetween(500, 30000),
             'created_at' => now(),
         ];
