@@ -12,6 +12,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\CheckoutController;
 
 
 Route::prefix('api')->group(function () {
@@ -38,6 +39,11 @@ Route::get('/cart',    [CartController::class, 'index']);
 Route::post('/cart',   [CartController::class, 'store']);
 Route::put('/cart',    [CartController::class, 'update']);
 Route::delete('/cart', [CartController::class, 'destroy']);
+
+// Stripe決済
+Route::post('/checkout', [CheckoutController::class, 'create']);
+Route::get('/success', function () { return '支払い成功!';})->name('checkout-success');
+Route::get('/cancel', function () { return '支払いキャンセル';})->name('checkout-cancel');
 
 // 認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {

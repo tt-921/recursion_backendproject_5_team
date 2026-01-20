@@ -52,6 +52,10 @@ function Header() {
     navigate('/wishlist');
   };
 
+  const handleOrderhistory = async () => {
+    navigate('/orderHistory');
+  };
+
   const handleFavoriteClick = () => {
     navigate('/favorites');
   };
@@ -128,7 +132,12 @@ function Header() {
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button size="icon-sm" aria-label="Submit" variant="ghost">
+                <Button
+                  size="icon-sm"
+                  aria-label="Submit"
+                  variant="ghost"
+                  onClick={handleOrderhistory}
+                >
                   <History />
                 </Button>
               </NavigationMenuItem>

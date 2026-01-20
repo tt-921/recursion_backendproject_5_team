@@ -8,7 +8,7 @@ function makeError(status: number, message?: string) {
 }
 
 export const listPublicCategories = async (): Promise<Category[]> => {
-  const res = await fetch(`${API_URL}/categories`, {
+  const res = await fetch(`${API_URL}/api/categories`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
@@ -20,7 +20,7 @@ export const listPublicCategories = async (): Promise<Category[]> => {
 };
 
 export const getPublicCategories = async (id: number | string): Promise<Category> => {
-  const res = await fetch(`${API_URL}/categories/${id}`, {
+  const res = await fetch(`${API_URL}/api/categories/${id}`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',

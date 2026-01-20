@@ -19,8 +19,13 @@ import {
 } from "../components/ui/dialog";
 import { Skeleton } from "../components/ui/skeleton";
 import { Coins, ChevronRight } from "lucide-react";
+import { StripeCheckout } from "@/services/paymentService";
 
 const Delivery = () => {
+  const handleCheckout = () => {
+    StripeCheckout();
+  }
+
   return (
     <div className="mx-auto container p-4">
       <div className="grid grid-cols-2 gap-15">
@@ -210,7 +215,12 @@ const Delivery = () => {
               キャンセル・ポリシーについて
               <ChevronRight />
             </Button>
-            <Button className="w-full rounded">注文を確定する</Button>
+            <Button 
+              className="w-full rounded"
+              onClick={handleCheckout}
+            >
+              注文を確定する
+            </Button>
           </section>
         </div>
       </div>

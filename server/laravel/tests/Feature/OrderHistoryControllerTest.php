@@ -39,7 +39,7 @@ class OrderHistoryControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-                         ->getJson("/api/order_history?user_id={$user->id}");
+                         ->getJson("/api/order_history");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -63,12 +63,10 @@ class OrderHistoryControllerTest extends TestCase
             ->assertJsonPath('data.0.order_items.0.product.title', 'test_product');
     }
 
-    public function test_returns_error_if_user_id_is_missing()
+    public function test_returns_401_if_unauthenticated(): void
     {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->getJson('/api/order_history');
-
-        $response->assertStatus(400);
+        $response = $this->getJson('/api/order_history');
+        $response->assertStatus(401);
     }
 }
 

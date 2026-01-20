@@ -16,6 +16,7 @@ import AdminCategoryEdit from '@/pages/admin/AdminCategoryEdit';
 import FavoriteList from './pages/FavoriteList';
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
+import OrderHistory from './pages/OrderHistory';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/product-list" element={<ProductList />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/orderHistory" element={<OrderHistory />} />
         </Route>
         <Route path="admin" element={<AdminLayout />}>
           <Route path="products" element={<AdminProductList />} />
