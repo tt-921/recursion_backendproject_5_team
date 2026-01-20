@@ -128,7 +128,7 @@ const ProductDetail = () => {
 
             <div className="flex items-center gap-2 mt-3">
               <p className="text-xl font-semibold text-gray-900">
-                ¥{(product.price ?? 0).toLocaleString()}{" "}
+                ¥{(product.default_price.unit_amount ?? 0).toLocaleString()}{" "}
                 <span className="text-sm text-gray-600">（税込）</span>
               </p>
               <span className="text-sm font-medium">送料無料</span>
