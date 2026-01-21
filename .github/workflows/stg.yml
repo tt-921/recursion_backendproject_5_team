@@ -2,9 +2,9 @@ name: stg CI/CD
 
 on:
   push:
-    branches: [stg]
+    branches: [demo-prod]
   pull_request:
-    branches: [stg]
+    branches: [demo-prod]
   workflow_dispatch:
 
 concurrency:
@@ -138,6 +138,24 @@ jobs:
         env:
           VITE_API_URL: /api
         run: npm run build
+
+      - name: Package artifacts for promotion
+        run: |
+          set -e
+          # backend: server/laravel（vendor 含む）を固める
+          tar -czf backend-laravel.tgz -C server laravel
+
+          # frontend: client/dist を固める
+          tar -czf frontend-dist.tgz -C client dist
+
+      - name: Upload artifacts for production promotion
+        uses: actions/upload-artifact@v4
+        with:
+          name: promoted-artifacts-${{ github.sha }}
+          path: |
+            backend-laravel.tgz
+            frontend-dist.tgz
+          retention-days: 3
 
       - name: Setup SSH key
         run: |
