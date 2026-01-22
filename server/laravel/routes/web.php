@@ -8,7 +8,7 @@ use App\Http\Controllers\ProductController as PublicProduct;
 use App\Http\Controllers\Admin\CategoryController as AdminCategory;
 use App\Http\Controllers\Admin\ProductController as AdminProduct;
 use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\CartController;
+
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\WishlistController;
@@ -34,11 +34,7 @@ Route::get('/products/{id}',   [PublicProduct::class, 'show']);
 Route::get('/categories',        [PublicCategory::class, 'index']);
 Route::get('/categories/{id}',   [PublicCategory::class, 'show']);
 
-// カート
-Route::get('/cart',    [CartController::class, 'index']);
-Route::post('/cart',   [CartController::class, 'store']);
-Route::put('/cart',    [CartController::class, 'update']);
-Route::delete('/cart', [CartController::class, 'destroy']);
+
 
 // Stripe決済
 Route::post('/checkout', [CheckoutController::class, 'create']);
