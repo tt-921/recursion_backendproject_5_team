@@ -2,6 +2,11 @@ name: prod CD
 
 on:
   workflow_dispatch:
+    inputs:
+      stg_run_id:
+        description: 'STG workflow run-id to promote (Actions run ID)'
+        required: true
+        type: string
 
   workflow_run:
     workflows: ['stg CI/CD'] # stg.yml の name と一致させる
@@ -17,13 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # stg 成功時のみ + 手動実行も許可
-    if: >-
-      ${
-        {
-          github.event_name == 'workflow_dispatch'
-          || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-        }
-      }
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
 
     # GitHub Environments の "production" を作って Required reviewers を必須にする
     environment: production
@@ -32,20 +31,32 @@ jobs:
       contents: read
       actions: read
 
+    env:
+      STG_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.stg_run_id || github.event.workflow_run.id }}
+
     steps:
-      - name: Download promoted artifacts from STG run
+      - name: Download artifacts from STG run
         uses: actions/download-artifact@v4
         with:
-          run-id: ${{ github.event.workflow_run.id }}
-          name: promoted-artifacts-${{ github.event.workflow_run.head_sha }}
+          run-id: ${{ env.STG_RUN_ID }}
           path: ./artifacts
 
       - name: Unpack artifacts
         run: |
           set -e
-          ls -la ./artifacts
-          tar -xzf ./artifacts/backend-laravel.tgz -C ./artifacts
-          tar -xzf ./artifacts/frontend-dist.tgz -C ./artifacts
+          echo "Downloaded artifacts:"
+          find ./artifacts -maxdepth 2 -type f -print
+          ART_DIR=$(find ./artifacts -maxdepth 2 -type f -name 'backend-laravel.tgz' -print -quit | xargs -I{} dirname {})
+          if [ -z "${ART_DIR}" ]; then
+            echo "backend-laravel.tgz not found under ./artifacts" >&2
+            exit 1
+          fi
+
+          echo "Using artifact dir: ${ART_DIR}"
+          ls -la "${ART_DIR}"
+
+          tar -xzf "${ART_DIR}/backend-laravel.tgz" -C ./artifacts
+          tar -xzf "${ART_DIR}/frontend-dist.tgz" -C ./artifacts
 
           # 展開結果確認
           ls -la ./artifacts/laravel | head
