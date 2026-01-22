@@ -1,6 +1,8 @@
 name: prod CD
 
 on:
+  workflow_dispatch:
+
   workflow_run:
     workflows: ['stg CI/CD'] # stg.yml の name と一致させる
     types: [completed]
@@ -14,8 +16,14 @@ jobs:
     name: Deploy to EC2 (prod)
     runs-on: ubuntu-latest
 
-    # stg 成功時のみ
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # stg 成功時のみ + 手動実行も許可
+    if: >-
+      ${
+        {
+          github.event_name == 'workflow_dispatch'
+          || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+        }
+      }
 
     # GitHub Environments の "production" を作って Required reviewers を必須にする
     environment: production
