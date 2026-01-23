@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('prices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products');
-            $table->integer('stripe_price_id');
+            $table->foreignId('product_id')->constrained('products')->unique();
+            $table->string('stripe_price_id')->unique()->nullable();
             $table->integer('unit_amount');
             $table->timestamps();
-
-            $table->primary(['id','stripe_price_id']);
         });
     }
 

@@ -1,0 +1,112 @@
+name: prod CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      stg_run_id:
+        description: 'STG workflow run-id to promote (Actions run ID)'
+        required: true
+        type: string
+
+  workflow_run:
+    workflows: ['stg CI/CD'] # stg.yml の name と一致させる
+    types: [completed]
+
+concurrency:
+  group: prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to EC2 (prod)
+    runs-on: ubuntu-latest
+
+    # stg 成功時のみ + 手動実行も許可
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
+
+    # GitHub Environments の "production" を作って Required reviewers を必須にする
+    environment: production
+
+    permissions:
+      contents: read
+      actions: read
+
+    env:
+      STG_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.stg_run_id || github.event.workflow_run.id }}
+
+    steps:
+      - name: Download artifacts from STG run
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ env.STG_RUN_ID }}
+          path: ./artifacts
+
+      - name: Unpack artifacts
+        run: |
+          set -e
+          echo "Downloaded artifacts:"
+          find ./artifacts -maxdepth 2 -type f -print
+          ART_DIR=$(find ./artifacts -maxdepth 2 -type f -name 'backend-laravel.tgz' -print -quit | xargs -I{} dirname {})
+          if [ -z "${ART_DIR}" ]; then
+            echo "backend-laravel.tgz not found under ./artifacts" >&2
+            exit 1
+          fi
+
+          echo "Using artifact dir: ${ART_DIR}"
+          ls -la "${ART_DIR}"
+
+          tar -xzf "${ART_DIR}/backend-laravel.tgz" -C ./artifacts
+          tar -xzf "${ART_DIR}/frontend-dist.tgz" -C ./artifacts
+
+          # 展開結果確認
+          ls -la ./artifacts/laravel | head
+          ls -la ./artifacts/dist | head
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          ssh-keyscan -H "${{ secrets.PROD_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload files to EC2 (rsync)
+        run: |
+          set -e
+
+          # 1) Deploy Laravel (artifact/laravel -> app/server/laravel)
+          rsync -az --delete --omit-dir-times --no-perms --no-owner --no-group \
+            --exclude ".env" \
+            --exclude "storage/" \
+            --exclude "storage/**" \
+            --exclude "bootstrap/cache/" \
+            --exclude "bootstrap/cache/**" \
+            -e "ssh -i ~/.ssh/id_key" \
+            ./artifacts/laravel/ \
+            ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:${{ secrets.PROD_APP_DIR }}/app/server/laravel/
+
+          # 2) Deploy Vite build artifacts (artifact/dist -> frontend/dist)
+          rsync -az --delete --omit-dir-times --no-perms --no-owner --no-group \
+            -e "ssh -i ~/.ssh/id_key" \
+            ./artifacts/dist/ \
+            ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:${{ secrets.PROD_APP_DIR }}/frontend/dist/
+
+      - name: Run remote commands (migrate + cache + reload)
+        run: |
+          ssh -i ~/.ssh/id_key ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
+            set -e
+            cd "${{ secrets.PROD_APP_DIR }}"
+
+            cd app/server/laravel
+            rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php bootstrap/cache/routes-*.php
+
+            php artisan migrate --force
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan cache:clear
+            php artisan config:cache
+            php artisan route:cache
+
+            sudo systemctl reload php8.2-fpm || true
+            sudo systemctl reload nginx || true
+          EOF

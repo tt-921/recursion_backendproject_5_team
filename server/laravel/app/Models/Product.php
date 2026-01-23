@@ -44,4 +44,9 @@ class Product extends Model
         return $this->belongsToMany(User::class, 'favorites')
             ->withTimestamps();
     }
+
+    public function defaultPrice()
+    {
+        return $this->belongsTo(Price::class, 'default_price_id');
+    }
 }

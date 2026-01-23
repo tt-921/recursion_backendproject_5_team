@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('creator')->nullable();
             $table->timestamps();
             $table->timestamp('released_at')->nullable();
-            $table->bigInteger('stripe_product_id')->unique()->nullable();
+            $table->string('stripe_product_id')->unique()->nullable();
             $table->json('seo_tags')->nullable();
         });
     }
