@@ -40,6 +40,7 @@ jobs:
         with:
           run-id: ${{ env.STG_RUN_ID }}
           path: ./artifacts
+          github-token: ${{ secrets.ACTIONS_PAT }}
 
       - name: Unpack artifacts
         run: |
