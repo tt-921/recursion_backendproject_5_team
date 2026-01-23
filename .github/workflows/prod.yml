@@ -98,7 +98,9 @@ jobs:
             cd "${{ secrets.PROD_APP_DIR }}"
 
             cd app/server/laravel
-            rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php bootstrap/cache/routes-*.php
+
+            sudo -u www-data rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php
+            sudo -u www-data rm -f bootstrap/cache/routes-*.php bootstrap/cache/routes*.php
 
             sudo -u www-data php artisan migrate --force
             sudo -u www-data php artisan config:clear
