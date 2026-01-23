@@ -100,13 +100,12 @@ jobs:
             cd app/server/laravel
             rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php bootstrap/cache/routes-*.php
 
-            php artisan migrate --force
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
-            php artisan cache:clear
-            php artisan config:cache
-            php artisan route:cache
+            sudo -u www-data php artisan migrate --force
+            sudo -u www-data php artisan config:clear
+            sudo -u www-data php artisan route:clear
+            sudo -u www-data php artisan cache:clear
+            sudo -u www-data php artisan config:cache
+            sudo -u www-data php artisan route:cache
 
             sudo systemctl reload php8.2-fpm || true
             sudo systemctl reload nginx || true
