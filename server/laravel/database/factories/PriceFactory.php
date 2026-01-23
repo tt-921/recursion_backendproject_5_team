@@ -13,14 +13,9 @@ class PriceFactory extends Factory
 
     public function definition(): array
     {
-        $category = Category::factory()->create();
-        $product = Product::factory()->create(['category_id' => $category->id, 'status' => 'published']);
-
         return [
-            'product_id' => $product->id,
             'stripe_price_id' => 'price_' . $this->faker->unique()->regexify('[A-Za-z0-9]{14}'),
             'unit_amount' => $this->faker->numberBetween(500, 30000),
-            'created_at' => now(),
         ];
     }
 }
