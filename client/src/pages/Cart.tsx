@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ChevronRight, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { getCart } from '@/services/cartService';
+import { getCart, deleteCartItem, updateCartItem} from '@/services/cartService';
 import type { CartItem } from '@/types/cartType';
 
 interface RecommendedProduct {
@@ -40,18 +40,6 @@ const mockRecommendedData: RecommendedProduct[] = [
   },
 ];
 
-/**
- * カートから商品を削除するAPI関数
- */
-const removeCartItem = async (id: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(`商品 ${id} を削除しました`);
-      resolve();
-    }, 300);
-  });
-};
-
 const fetchRecommendedProducts = async (): Promise<RecommendedProduct[]> => {
   return new Promise((resolve) => setTimeout(() => resolve(mockRecommendedData), 500));
 };
@@ -63,6 +51,7 @@ const Cart: React.FC = () => {
   const [recommendedProducts, setRecommendedProducts] = useState<RecommendedProduct[]>([]);
   const shippingFee = 1820;
 
+  //GET:商品情報取得
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -86,14 +75,43 @@ const Cart: React.FC = () => {
     loadData();
   }, []);
 
+  //DELETE: 商品削除
   const removeFromCart = async (id: number): Promise<void> => {
     try {
+      const deletedItem = cartItems.find((item) => item.id === id);
+      console.log("Deleted item:", deletedItem);
+      
       setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-      await removeCartItem(id);
+      deleteCartItem(id);
     } catch (error) {
       console.error('削除に失敗しました:', error);
+      const cart = await getCart();
+      setCartItems(cart.items);
     }
   };
+
+  //UPDATE: 商品数量の更新
+  const updateQuantity = async (cartItemId: number, quantity: number) => {
+    if (quantity < 1) return;
+
+    try {
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item.id === cartItemId ? { ...item, quantity } : item
+        )
+      );
+
+      await updateCartItem({
+        cart_item_id: cartItemId,
+        quantity,
+      });
+    } catch (error) {
+      console.error("数量更新に失敗しました:", error);
+      const cart = await getCart();
+      setCartItems(cart.items);
+    }
+  };
+
 
   // 商品小計の計算（unit_amountを使用）
   const subtotal = cartItems.reduce((sum, item) => {
@@ -170,7 +188,23 @@ const Cart: React.FC = () => {
                       <p className="text-lg font-semibold text-gray-900 mb-2">
                         ¥{formatCurrency(item.unit_amount ?? 0)}
                       </p>
-                      <p className="text-sm text-gray-500">数量：{item.quantity}</p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="px-2 border rounded"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        >
+                          −
+                        </button>
+
+                        <p className="text-sm text-gray-500">数量：{item.quantity}</p>
+
+                        <button
+                          className="px-2 border rounded"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        >
+                          ＋
+                        </button>
+                      </div>
                     </div>
 
                     {/* 小計 */}
