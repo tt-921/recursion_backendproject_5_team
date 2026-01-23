@@ -10,18 +10,45 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - '3306:3306'
+
+  db_test:
+    container_name: db_test
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: test_root_pw
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: test_user
+      MYSQL_PASSWORD: test_pw
+    ports:
+      - '3307:3306'
+
   app:
     build:
       context: ./server
     container_name: app
     depends_on:
       - db
+      - db_test
     volumes:
       - ./server/laravel:/var/www/html
-      - /var/www/html/vendor
+      
     ports:
-      - "8000:8000" 
-
+      - '8000:8000'
+  react:
+    container_name: react
+    platform: linux/amd64
+    build:
+      context: ./client
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - '5173:5173'
+    environment:
+      - CHOKIDAR_USEPOLLING=true # ファイル変更の監視をポーリング方式に変更。CPU負荷が高くなるため、本番環境では使用しない。
+    working_dir: /app
+    command: ['npm', 'run', 'dev', '--', '--host']
 volumes:
   db_data:
+  vendor_data:

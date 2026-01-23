@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'stripe' => [
+        'public' => env('STRIPE_PUBLIC'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'tax_rate_id' => env('STRIPE_TAX_RATE'),
+    ]
+
 ];
