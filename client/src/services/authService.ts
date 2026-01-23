@@ -5,7 +5,7 @@ import { API_URL } from '@/config/api';
 // ユーザ情報取得
 export const fetchUser = async (): Promise<User | null> => {
   try {
-    const response = await fetch(`${API_URL}/api/user`, {
+    const response = await fetch(`${API_URL}/user`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
       credentials: 'include',
@@ -28,7 +28,7 @@ export const signup = async (
   passwordConfirmation: string,
   csrfToken: string | null
 ) => {
-  const response = await fetch(`${API_URL}/api/register`, {
+  const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const signup = async (
 
 //　ログイン
 export const login = async (email: string, password: string, csrfToken: string) => {
-  const response = await fetch(`${API_URL}/api/login`, {
+  const response = await fetch(`${API_URL}/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export const login = async (email: string, password: string, csrfToken: string) 
 export const logout = async () => {
   const csrfToken = getCsrfToken();
 
-  const response = await fetch(`${API_URL}/api/logout`, {
+  const response = await fetch(`${API_URL}/logout`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
