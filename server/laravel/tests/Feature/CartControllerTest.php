@@ -22,11 +22,8 @@ class CartControllerTest extends TestCase
             'category_id' => $category->id,
             'status' => 'published',
         ]);
-        $price = Price::create([
+        $price = Price::factory()->create([
             'product_id' => $product->id,
-            'stripe_price_id' => 123456,
-            'unit_amount' => 1200,
-            'created_at' => now(),
         ]);
 
         return [$product, $price];
