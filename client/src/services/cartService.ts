@@ -55,3 +55,42 @@ export const getCart = async () => {
   return handleResponse(res);
 };
 
+/**
+ * PUT: カート内商品の数量更新
+ */
+export const updateCartItem = async (payload: UpdateCartPayload) => {
+  const csrfToken = getCsrfToken();
+
+  const res = await fetch(`${API_URL}/api/cart`, {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "X-XSRF-TOKEN": csrfToken ?? "",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(res);
+};
+
+/**
+ * DELETE: カート内の商品削除
+ */
+export const deleteCartItem = async (cart_item_id: number) => {
+  const csrfToken = getCsrfToken();
+
+  const res = await fetch(`${API_URL}/api/cart`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "X-XSRF-TOKEN": csrfToken ?? "",
+    },
+    body: JSON.stringify({ cart_item_id }),
+  });
+
+  return handleResponse(res);
+};
