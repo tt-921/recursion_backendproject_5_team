@@ -20,11 +20,36 @@ import {
 import { Skeleton } from "../components/ui/skeleton";
 import { Coins, ChevronRight } from "lucide-react";
 import { StripeCheckout } from "@/services/paymentService";
+import { getCart } from "@/services/cartService";
+import { useState, useEffect } from "react";
+import type { CartItem } from "@/types/cartType";
+import { calculateCartTotals, formatCurrency } from "@/lib/cart/calculator";
 
 const Delivery = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const shippingFee = 1820;
   const handleCheckout = () => {
     StripeCheckout();
   }
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        setIsLoading(true);
+        const cart = await getCart();
+        setCartItems(cart.items);
+      } catch (e) {
+        console.error("カート取得失敗", e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCart();
+  }, []);
+
+  const { subtotal, total } = calculateCartTotals(cartItems, shippingFee);
+
 
   return (
     <div className="mx-auto container p-4">
@@ -197,15 +222,15 @@ const Delivery = () => {
             <div className="border-b">
               <dl className="mb-2 flex justify-between text-sm">
                 <dt>商品の小計：</dt>
-                <dd>12,000円</dd>
+                <dd>¥{formatCurrency(subtotal)}</dd>
               </dl>
               <dl className="flex justify-between text-sm">
                 <dt>配送料・サービス料：</dt>
-                <dd>1,200円</dd>
+                <dd>¥{formatCurrency(shippingFee)}</dd>
               </dl>
               <dl className="py-6 flex justify-between align-end text-sm font-bold">
                 <dt>ご請求額：</dt>
-                <dd className="text-lg font-bold">13,200円</dd>
+                <dd className="text-lg font-bold">¥{formatCurrency(total)}</dd>
               </dl>
             </div>
             <Button
