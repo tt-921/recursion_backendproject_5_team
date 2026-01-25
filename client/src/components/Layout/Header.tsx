@@ -46,6 +46,10 @@ function Header() {
   const handleFavoriteClick = () => {
     navigate('/favorites');
   };
+  
+  const handleCartPage = () => {
+    navigate('/cart');
+  }
 
   const handleSearchTermChange = async (term: string) => {
     setSearchTerm(term);
@@ -104,7 +108,12 @@ function Header() {
                 </div>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button size="icon-sm" aria-label="Submit" variant="ghost">
+                <Button 
+                  size="icon-sm" 
+                  aria-label="Submit" 
+                  variant="ghost"
+                  onClick={handleCartPage}
+                >
                   <ShoppingCart />
                 </Button>
               </NavigationMenuItem>
