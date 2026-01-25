@@ -8,18 +8,51 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Star } from "lucide-react";
+import { Star, Loader2, ShoppingCart, Check } from "lucide-react";
 import Heading from "@/components/Heading";
 import { getPublicProduct } from "@/services/productService";
 import type { ProductDetail as ProductDetailType } from "@/types/ProductDetailType";
+import { addToCart } from "@/services/cartService";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [selectedQty, setSelectedQty] = useState("1");
   const [product, setProduct] = useState<ProductDetailType | null>(null);
-  // const [isWishlisted, setIsWishlisted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // カート追加の状態管理
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [addToCartSuccess, setAddToCartSuccess] = useState(false);
+
+  const handleAddToCart = async () => {
+    if (!product?.default_price) return;
+
+    try {
+      setIsAddingToCart(true);
+      setAddToCartSuccess(false);
+      
+      await addToCart({
+        product_id: product.id,
+        price_id: product.default_price.id,
+        quantity: Number(selectedQty),
+      });
+      
+      console.log("アイテム追加成功");
+      setAddToCartSuccess(true);
+      
+      // 3秒後に成功メッセージをリセット
+      setTimeout(() => {
+        setAddToCartSuccess(false);
+      }, 3000);
+      
+    } catch (err) {
+      console.error(err);
+      alert("カートへの追加に失敗しました");
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
 
   // 仮の補助データ（販売元、レビュー、推奨商品）
   const productsInfo = {
@@ -71,7 +104,6 @@ const ProductDetail = () => {
       try {
         const response = await getPublicProduct(id);
         setProduct(response.data);
-        // setIsWishlisted(response.meta.is_wishlisted);
       } catch (err: any) {
         console.error(err);
         setError(err.message || "商品取得に失敗しました");
@@ -83,7 +115,17 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id]);
 
-  if (loading) return <div>読み込み中...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-gray-900 mx-auto mb-4" />
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+  
   if (error) return <div className="text-red-600">エラー: {error}</div>;
   if (!product) return <div>商品が見つかりません</div>;
 
@@ -128,7 +170,7 @@ const ProductDetail = () => {
 
             <div className="flex items-center gap-2 mt-3">
               <p className="text-xl font-semibold text-gray-900">
-                ¥{(product.price ?? 0).toLocaleString()}{" "}
+                ¥{(product.default_price.unit_amount ?? 0).toLocaleString()}{" "}
                 <span className="text-sm text-gray-600">（税込）</span>
               </p>
               <span className="text-sm font-medium">送料無料</span>
@@ -165,6 +207,33 @@ const ProductDetail = () => {
 
             <Button className="w-full bg-black text-white text-sm mt-1 py-5 hover:bg-gray-800">
               購入する
+            </Button>
+            
+            <Button 
+              className={`w-full text-white text-sm mt-1 py-5 transition-all ${
+                addToCartSuccess 
+                  ? 'bg-green-600 hover:bg-green-700' 
+                  : 'bg-black hover:bg-gray-800'
+              }`}
+              onClick={handleAddToCart}
+              disabled={isAddingToCart || addToCartSuccess}
+            >
+              {isAddingToCart ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  追加中...
+                </span>
+              ) : addToCartSuccess ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Check className="w-5 h-5" />
+                  カートに追加しました
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <ShoppingCart className="w-5 h-5" />
+                  カートに追加する
+                </span>
+              )}
             </Button>
 
             <div className="mt-10 pt-5">
