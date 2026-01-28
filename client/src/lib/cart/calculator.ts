@@ -14,6 +14,10 @@ export const calculateCartTotals = (
   return { subtotal, total };
 };
 
+export const calculateTax = (subtotal: number, taxRate: number = 0.1) => {
+  return Math.round(subtotal * taxRate);
+};
+
 export const formatCurrency = (
   amount: number,
   locale: string = "ja-JP"
