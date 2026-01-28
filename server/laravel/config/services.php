@@ -40,6 +40,7 @@ return [
         'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
         'tax_rate_id' => env('STRIPE_TAX_RATE'),
+        'shipping_rate_id' => env('STRIPE_SHIPPING_RATE')
     ]
 
 ];
