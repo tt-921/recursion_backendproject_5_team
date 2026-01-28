@@ -8,12 +8,14 @@ use Stripe\Stripe;
 
 class PaymentService
 {
-    public function createCheckoutSession($user, array $items): string
+    public function createCheckoutSession($user, $items): string
     {
         Stripe::setApiKey(config('services.stripe.secret'));
 
+        $itemsCollection = collect($items);
+
         $products = Product::with('defaultPrice')
-            ->whereIn('id', collect($items)->pluck('product_id'))
+            ->whereIn('id', $itemsCollection->pluck('product_id'))
             ->get()
             ->keyBy('id');
 
@@ -39,6 +41,9 @@ class PaymentService
         $session = StripeSession::create([
             'mode' => 'payment',
             'line_items' => $lineItems,
+            'shipping_options' => [
+                ['shipping_rate' => config('services.stripe.shipping_rate_id')],
+            ],
             'success_url' => route('checkout-success'),
             'cancel_url' => route('checkout-cancel'),
             'metadata' => [
