@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Services\StripeService;
 
 class ProductSeeder extends Seeder
 {
@@ -14,7 +12,6 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $stripeService = new StripeService();
 
         $products = [
             // お菓子 (category_id = 1)
@@ -25,7 +22,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 1,
                 'creator' => 'カルビィ',
-                'stripe_product_id' => 'prod_000101',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'ポテトチップス うすしお',
                     'description' => '定番スナック菓子のポテトチップス。',
@@ -40,7 +37,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 1,
                 'creator' => 'メイチョ',
-                'stripe_product_id' => 'prod_000102',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'チョコレートバー',
                     'description' => '甘くて濃厚なチョコレートバー。',
@@ -55,7 +52,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 1,
                 'creator' => 'ヤマッツ',
-                'stripe_product_id' => 'prod_000103',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'ビスケット バター風味',
                     'description' => 'おやつに最適なバタービスケット。',
@@ -70,7 +67,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 1,
                 'creator' => 'カバヤン',
-                'stripe_product_id' => 'prod_000104',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'フルーツグミ',
                     'description' => '子供にも人気のフルーツグミ。',
@@ -87,7 +84,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 2,
                 'creator' => 'サントリャ',
-                'stripe_product_id' => 'prod_000201',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'ミネラルウォーター',
                     'description' => '安心の国産ミネラルウォーター。',
@@ -102,7 +99,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 2,
                 'creator' => 'コカ・コラァ',
-                'stripe_product_id' => 'prod_000202',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => '緑茶',
                     'description' => '香り豊かな緑茶。',
@@ -117,7 +114,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 2,
                 'creator' => 'ジョージャ',
-                'stripe_product_id' => 'prod_000203',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => '缶コーヒー 微糖',
                     'description' => '仕事の合間に最適な缶コーヒー。',
@@ -132,7 +129,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 2,
                 'creator' => 'ポッキャリ',
-                'stripe_product_id' => 'prod_000204',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'スポーツドリンク',
                     'description' => '熱中症対策にもおすすめ。',
@@ -149,7 +146,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 3,
                 'creator' => 'ハナオー',
-                'stripe_product_id' => 'prod_000301',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'トイレットペーパー',
                     'description' => 'まとめ買いに便利な12ロール。',
@@ -164,7 +161,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 3,
                 'creator' => 'ライヨン',
-                'stripe_product_id' => 'prod_000302',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'キッチン用洗剤',
                     'description' => '毎日の食器洗いに。',
@@ -179,7 +176,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 3,
                 'creator' => 'ユニチャーム風',
-                'stripe_product_id' => 'prod_000303',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => '除菌ウェットティッシュ',
                     'description' => '持ち運びに便利な除菌シート。',
@@ -196,7 +193,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 4,
                 'creator' => 'ハウズ食品',
-                'stripe_product_id' => 'prod_000401',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'レトルトカレー',
                     'description' => '手軽に食べられる本格カレー。',
@@ -211,7 +208,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 4,
                 'creator' => 'バルィラ',
-                'stripe_product_id' => 'prod_000402',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'スパゲッティ',
                     'description' => '家庭用にも業務用にも最適。',
@@ -226,7 +223,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 4,
                 'creator' => 'マルコメ風',
-                'stripe_product_id' => 'prod_000403',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => '即席みそ汁',
                     'description' => '毎日の食卓に便利なみそ汁。',
@@ -241,7 +238,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 4,
                 'creator' => 'ニチレイ風',
-                'stripe_product_id' => 'prod_000404',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => '冷凍チャーハン',
                     'description' => '忙しい時の強い味方。',
@@ -258,7 +255,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 5,
                 'creator' => 'パイロットォ',
-                'stripe_product_id' => 'prod_000501',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'ボールペン',
                     'description' => '職場や学校で使える定番文房具。',
@@ -273,7 +270,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 5,
                 'creator' => 'コクヨウ',
-                'stripe_product_id' => 'prod_000502',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'A5ノート',
                     'description' => 'メモや授業用に最適。',
@@ -288,7 +285,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 5,
                 'creator' => 'ゼブラァ',
-                'stripe_product_id' => 'prod_000503',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'シャープペン',
                     'description' => '学生から社会人まで使える。',
@@ -305,7 +302,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 6,
                 'creator' => 'ムジルシ風',
-                'stripe_product_id' => 'prod_000601',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'エコバッグ',
                     'description' => 'お買い物に便利なエコバッグ。',
@@ -320,7 +317,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 6,
                 'creator' => 'ワコール風雨具',
-                'stripe_product_id' => 'prod_000602',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => '折りたたみ傘',
                     'description' => '軽量で持ち運びやすい傘。',
@@ -335,7 +332,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 6,
                 'creator' => 'アンカー風',
-                'stripe_product_id' => 'prod_000603',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'モバイルバッテリー',
                     'description' => 'スマホの充電切れ対策に。',
@@ -350,7 +347,7 @@ class ProductSeeder extends Seeder
                 'status' => 'published',
                 'category_id' => 6,
                 'creator' => 'エレコム風',
-                'stripe_product_id' => 'prod_000604',
+                'stripe_product_id' => null,
                 'seo_tags' => json_encode([
                     'title' => 'USB-Cケーブル',
                     'description' => 'データ転送にも対応。',
@@ -361,38 +358,13 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
-            echo "product: {$product['title']} を処理\n";
-
-            try {
-                // Stripe に Product を作成または更新
-                $stripeProductId = $stripeService->createOrUpdateProduct([
-                    'stripe_product_id' => $product['stripe_product_id'],
-                    'name' => $product['title'],
-                    'description' => $product['description'],
-                    'metadata' => [
-                        'creator' => $product['creator'],
-                        'category_id' => $product['category_id'],
-                    ],
-                ]);
-
-                echo "   Stripe Productの作成と更新: {$stripeProductId}\n";
-
-                // DB に upsert（titleで一意性を確保）
-                DB::table('products')->updateOrInsert(
-                    ['title' => $product['title']],
-                    array_merge($product, [
-                        'stripe_product_id' => $stripeProductId,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ])
-                );
-
-                echo "  データベース更新完了\n";
-            } catch (\Exception $e) {
-                echo "  エラー: {$e->getMessage()}\n";
-            }
+            DB::table('products')->updateOrInsert(
+                ['title' => $product['title']],
+                array_merge($product, [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ])
+            );
         }
-
-        echo "\nProductSeeder完了!\n";
     }
 }
