@@ -15,6 +15,12 @@ class CartControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private static function nextStripePriceId(): int
+    {
+        static $id = 123456;
+        return $id++;
+    }
+
     private function createProductAndPrice(): array
     {
         $category = Category::factory()->create();
@@ -24,7 +30,8 @@ class CartControllerTest extends TestCase
         ]);
         $price = Price::create([
             'product_id' => $product->id,
-            'stripe_price_id' => 123456,
+            // `stripe_price_id` is unique in DB; generate a unique value per call.
+            'stripe_price_id' => self::nextStripePriceId(),
             'unit_amount' => 1200,
             'created_at' => now(),
         ]);
