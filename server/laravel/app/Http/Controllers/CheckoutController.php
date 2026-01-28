@@ -4,20 +4,27 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\PaymentService;
+use App\Services\CartService;
 
 class CheckoutController extends Controller
 {
+    protected $cartService;
+
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     public function create(Request $request, PaymentService $paymentService)
     {
-        // 本来はフロントから受け取る
-        $items = [
-            ['product_id' => 1, 'quantity' => 1],
-            ['product_id' => 3, 'quantity' => 1],
-        ];
+        $user = $request->user();
+
+        // サーバー側で cart を取得
+        $cartItems = $this->cartService->getCartItems($user->id);
 
         $checkoutUrl = $paymentService->createCheckoutSession(
-            $request->user(),
-            $items
+            $user,
+            $cartItems
         );
 
         return response()->json([
