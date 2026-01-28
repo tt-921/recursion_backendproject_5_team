@@ -5,7 +5,11 @@ export interface ProductDetail {
   category_id?: number | null;
   status?: string | null;
   released_at?: string | null;
-  price?: number | null;
+  default_price: {
+    id: number;
+    unit_amount: number;
+    stripe_price_id: string;
+  };
 }
 
 export interface ProductDetailResponse {

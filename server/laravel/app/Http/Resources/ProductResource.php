@@ -21,7 +21,13 @@ class ProductResource extends JsonResource
             'category_id' => $this->category_id,
             'status'      => $this->status,
             'released_at' => optional($this->released_at)->toDateString(),
-            'price' => $this->defaultPrice ? $this->defaultPrice->unit_amount : null,
+            'default_price' => $this->whenLoaded('defaultPrice', function () {
+                return [
+                    'id' => $this->defaultPrice->id,
+                    'unit_amount' => $this->defaultPrice->unit_amount,
+                    'stripe_price_id' => $this->defaultPrice->stripe_price_id,
+                ];
+            }),
         ];
     }
 }
