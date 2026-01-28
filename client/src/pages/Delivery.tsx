@@ -23,10 +23,10 @@ import { StripeCheckout } from "@/services/paymentService";
 import { getCart } from "@/services/cartService";
 import { useState, useEffect } from "react";
 import type { CartItem } from "@/types/cartType";
-import { calculateCartTotals, formatCurrency } from "@/lib/cart/calculator";
+import { calculateCartTotals, formatCurrency, calculateTax } from "@/lib/cart/calculator";
 
 const Delivery = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [, setIsLoading] = useState<boolean>(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const shippingFee = 1820;
   const handleCheckout = () => {
@@ -49,6 +49,8 @@ const Delivery = () => {
   }, []);
 
   const { subtotal, total } = calculateCartTotals(cartItems, shippingFee);
+  const tax = calculateTax(subtotal);
+  const finalPrice = total + tax;
 
 
   return (
@@ -228,9 +230,13 @@ const Delivery = () => {
                 <dt>配送料・サービス料：</dt>
                 <dd>¥{formatCurrency(shippingFee)}</dd>
               </dl>
+              <dl className="flex justify-between text-sm">
+                <dt>消費税：</dt>
+                <dd>¥{formatCurrency(tax)}</dd>
+              </dl>
               <dl className="py-6 flex justify-between align-end text-sm font-bold">
                 <dt>ご請求額：</dt>
-                <dd className="text-lg font-bold">¥{formatCurrency(total)}</dd>
+                <dd className="text-lg font-bold">¥{formatCurrency(finalPrice)}</dd>
               </dl>
             </div>
             <Button
