@@ -1,14 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { ChevronRight, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
-interface CartItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-}
+import { getCart, deleteCartItem, updateCartItem} from '@/services/cartService';
+import type { CartItem } from '@/types/cartType';
 
 interface RecommendedProduct {
   id: string;
@@ -17,39 +11,6 @@ interface RecommendedProduct {
   rating: number;
   imageUrl?: string;
 }
-
-// ===== モックデータ（後でAPI呼び出しに置き換える） =====
-// ダミーのカートデータ
-const mockCartData: CartItem[] = [
-  {
-    id: '1',
-    name: '商品名が入ります',
-    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
-    price: 18200,
-    quantity: 1,
-  },
-  {
-    id: '2',
-    name: '商品名が入ります',
-    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
-    price: 18200,
-    quantity: 1,
-  },
-  {
-    id: '3',
-    name: '商品名が入ります',
-    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
-    price: 18200,
-    quantity: 1,
-  },
-  {
-    id: '4',
-    name: '商品名が入ります',
-    description: '商品説明や値段が入ります。商品説明や値段が入ります。',
-    price: 18200,
-    quantity: 1,
-  },
-];
 
 // ダミーの推奨商品データ
 const mockRecommendedData: RecommendedProduct[] = [
@@ -79,104 +40,90 @@ const mockRecommendedData: RecommendedProduct[] = [
   },
 ];
 
-// ===== モックAPI関数（後で実際のAPI呼び出しに置き換える） =====
-/**
- * カート情報を取得する関数
- * 将来的には以下のように置き換えます：
- *
- * const fetchCartItems = async (): Promise<CartItem[]> => {
- *   const response = await fetch('/api/cart');
- *   const data = await response.json();
- *   return data.items;
- * };
- */
-const fetchCartItems = async (): Promise<CartItem[]> => {
-  // 実際のAPIを呼ぶような非同期処理をシミュレート
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockCartData);
-    }, 500); // 500msの遅延でネットワークをシミュレート
-  });
-};
-
-/**
- * カートから商品を削除するAPI関数
- * 将来的には以下のように置き換えます：
- *
- * const removeCartItem = async (id: string): Promise<void> => {
- *   await fetch(`/api/cart/${id}`, { method: 'DELETE' });
- * };
- */
-const removeCartItem = async (id: string): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(`商品 ${id} を削除しました`);
-      resolve();
-    }, 300);
-  });
-};
-
 const fetchRecommendedProducts = async (): Promise<RecommendedProduct[]> => {
   return new Promise((resolve) => setTimeout(() => resolve(mockRecommendedData), 500));
 };
 
 // ===== メインコンポーネント =====
 const Cart: React.FC = () => {
-  // ローディング状態の管理
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [recommendedProducts, setRecommendedProducts] = useState<RecommendedProduct[]>([]);
-  const shippingFee = 1820; // 定数として定義
+  const shippingFee = 1820;
 
-  // コンポーネントマウント時にデータを取得
+  //GET:商品情報取得
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
 
-        // 並列でデータを取得（Promise.all を使用）
         const [cartData, recommendedData] = await Promise.all([
-          fetchCartItems(),
+          getCart(),
           fetchRecommendedProducts(),
         ]);
-
-        setCartItems(cartData);
+        
+        console.log("Cart Items:", cartData.items); //デバッグ用
+        setCartItems(cartData.items);
         setRecommendedProducts(recommendedData);
       } catch (error) {
-        console.error('データの取得に失敗しました:', error);
-        // エラーハンドリング（トースト通知などを表示）
+        console.error("データの取得に失敗しました:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadData();
-  }, []); // 空の依存配列 = マウント時のみ実行
+  }, []);
 
-  // カートから商品を削除する関数
-  const removeFromCart = async (id: string): Promise<void> => {
+  //DELETE: 商品削除
+  const removeFromCart = async (id: number): Promise<void> => {
     try {
-      // 楽観的UI更新：APIを待たずにUIを更新
+      const deletedItem = cartItems.find((item) => item.id === id);
+      console.log("Deleted item:", deletedItem);
+      
       setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-
-      // バックエンドで削除
-      await removeCartItem(id);
+      deleteCartItem(id);
     } catch (error) {
       console.error('削除に失敗しました:', error);
-      // エラー時は元に戻す処理を追加することも可能
+      const cart = await getCart();
+      setCartItems(cart.items);
     }
   };
 
-  // 商品小計の計算
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  //UPDATE: 商品数量の更新
+  const updateQuantity = async (cartItemId: number, quantity: number) => {
+    if (quantity < 1) return;
+
+    try {
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item.id === cartItemId ? { ...item, quantity } : item
+        )
+      );
+
+      await updateCartItem({
+        cart_item_id: cartItemId,
+        quantity,
+      });
+    } catch (error) {
+      console.error("数量更新に失敗しました:", error);
+      const cart = await getCart();
+      setCartItems(cart.items);
+    }
+  };
+
+
+  // 商品小計の計算（unit_amountを使用）
+  const subtotal = cartItems.reduce((sum, item) => {
+    const unitAmount = item.unit_amount ?? 0;
+    return sum + unitAmount * item.quantity;
+  }, 0);
   const total = subtotal + shippingFee;
 
-  // 数値を日本円フォーマットに変換
   const formatCurrency = (amount: number): string => {
     return amount.toLocaleString('ja-JP');
   };
 
-  // 星評価を生成
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-0.5">
@@ -189,7 +136,6 @@ const Cart: React.FC = () => {
     );
   };
 
-  // ローディング中の表示
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -236,10 +182,37 @@ const Cart: React.FC = () => {
 
                     {/* 商品情報 */}
                     <div className="flex-1">
-                      <h3 className="font-bold mb-1">{item.name}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                      <p className="text-sm text-gray-500">数量：{item.quantity}</p>
+                      <h3 className="font-bold mb-1">
+                        {item.product_title || '商品名なし'}
+                      </h3>
+                      <p className="text-lg font-semibold text-gray-900 mb-2">
+                        ¥{formatCurrency(item.unit_amount ?? 0)}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="px-2 border rounded"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        >
+                          −
+                        </button>
+
+                        <p className="text-sm text-gray-500">数量：{item.quantity}</p>
+
+                        <button
+                          className="px-2 border rounded"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        >
+                          ＋
+                        </button>
+                      </div>
                     </div>
+
+                    {/* 小計 */}
+                    {/* <div className="text-right">
+                      <p className="text-lg font-bold">
+                        ¥{formatCurrency((item.unit_amount ?? 0) * item.quantity)}
+                      </p>
+                    </div> */}
                   </div>
                 ))}
               </div>
@@ -253,15 +226,15 @@ const Cart: React.FC = () => {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
                 <span className="text-gray-600">商品の小計：</span>
-                <span className="font-semibold">{formatCurrency(subtotal)}円</span>
+                <span className="font-semibold">¥{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">配送料・サービス料：</span>
-                <span className="font-semibold">{formatCurrency(shippingFee)}円</span>
+                <span className="font-semibold">¥{formatCurrency(shippingFee)}</span>
               </div>
               <div className="border-t pt-3 flex justify-between text-lg">
                 <span className="font-bold">ご請求額：</span>
-                <span className="font-bold">{formatCurrency(total)}円</span>
+                <span className="font-bold">¥{formatCurrency(total)}</span>
               </div>
             </div>
 
@@ -290,20 +263,14 @@ const Cart: React.FC = () => {
                 key={product.id}
                 className="border rounded-lg p-4 hover:shadow-md transition-shadow"
               >
-                {/* 商品画像 */}
                 <div className="w-full aspect-square bg-gray-200 rounded mb-3 flex items-center justify-center">
                   <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
                   </svg>
                 </div>
 
-                {/* 商品名 */}
                 <h3 className="font-bold mb-2">{product.name}</h3>
-
-                {/* 星評価 */}
                 <div className="mb-2">{renderStars(product.rating)}</div>
-
-                {/* 商品説明 */}
                 <p className="text-sm text-gray-600">{product.description}</p>
               </div>
             ))}

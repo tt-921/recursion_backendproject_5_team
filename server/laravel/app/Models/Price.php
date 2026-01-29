@@ -9,7 +9,7 @@ class Price extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     protected $fillable = [
         'product_id',

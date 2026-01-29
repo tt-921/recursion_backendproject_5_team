@@ -28,7 +28,7 @@ class CartControllerTest extends TestCase
             'category_id' => $category->id,
             'status' => 'published',
         ]);
-        $price = Price::create([
+        $price = Price::factory()->create([
             'product_id' => $product->id,
             // `stripe_price_id` is unique in DB; generate a unique value per call.
             'stripe_price_id' => self::nextStripePriceId(),
@@ -73,11 +73,11 @@ class CartControllerTest extends TestCase
             'price_id' => $price->id,
             'quantity' => 1,
         ]);
-        
+
         $token = $createResponse->getCookie('cart_token')->getValue();
 
         $itemId = $createResponse->json('items.0.id');
-        
+
         $updateResponse = $this->withCookie('cart_token', $token)->withCredentials()->apiPut('cart', [
             'cart_item_id' => $itemId,
             'quantity' => 4,

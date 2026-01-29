@@ -80,45 +80,70 @@ docker compose down
 ```
 
 ## ローカル開発用 Stripe 設定手順
-### 1. Stripe アカウントの作成
+## 1. Stripe アカウントの作成
 - Stripe公式サイトにアクセス
 - 無料で始める からアカウントを作成
 - テストモードで利用することを確認
 
-### 2. API キーの取得
+## 2. API キーの取得(公開キーとシークレットキー)
 - Stripe ダッシュボードにログイン
 - 下メニューから　”開発者" → "概要"
-- テストモードのキーを取得
+- テストモードのキーを取得(.envに追加)
   - Publishable Key: pk_test_...
   - Secret Key: sk_test_...
 
-### 3. Webhook シークレットの取得
+## 3. Webhook シークレットキーの取得
 - Stripe ダッシュボード → "開発者" → "Webhook"
 - 「エンドポイントを追加」
   - URL はローカルで ngrok などを使って作成
   →(例：{取得URL}/api/stripe/webhook)
   - イベントは必要なものだけ選択
   →(checkout.session.completed, checkout.session.expired)
-- Webhook Secret (whsec_...) をコピー
+- Webhook Secret 取得(.envに追加)
+  - Webhook Key: whsec_....
 
-### 4. ローカル .env ファイルの設定
+## 4. ローカル .env ファイルの設定
 プロジェクトのルートに .env を作成（または更新）し、以下を追加：
 ```bash
 STRIPE_KEY=pk_test_あなたの公開キー
 STRIPE_SECRET=sk_test_あなたの秘密キー
 STRIPE_WEBHOOK_SECRET=whsec_あなたのWebhookシークレット
 ```
-### 5. データベース初期化と Seeder 実行
-各自の環境で以下を実行し、DB と Stripe のテストデータを同期：
+## 5. データベース初期化と Seeder 実行
+
+1.コンテナ内に入る
 ```bash
-docker compose exec app php artisan migrate:fresh --seed
+docker exec -it app bash
 ```
-### 6. Stripe 上での確認
+
+2.ローカルDBをリセット
+```bash
+php artisan migrate:fresh
+```
+
+3.Seederを実行
+```bash
+php artisan db:seed
+```
+
+4.Stripeに商品と価格を作成(すでにStripeに作成済みならスキップ)
+```basj
+php artisan stripe:create
+```
+
+5.Stripe上の product id / price id をローカルDBへ反映
+```bash
+php artisan stripe:sync
+```
+
+※ Sync処理は title ↔ name の一致 でIDをローカルに反映します。
+
+## 6. Stripe 上での確認
 - Stripe ダッシュボード → 商品 : Seeder に書いた stripe_product_id がテスト商品として存在するか確認
 
 - 「価格」stripe_price_id が登録されているか確認
 
-### 7. 注意事項
+## 7. 注意事項
 - 3のWebhook シークレットの取得はメーリング機能、購入履歴、シップメント機能などの動作に必要になります
 
 - ngrokサーバーを立ち上げる毎にStripeダッシュボード上の"エンドポイントURL"の更新が必要です

@@ -29,7 +29,7 @@ class ProductRequest extends FormRequest
             'status' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'creator' => 'nullable|string',
-            'stripe_product_id' => 'nullable|integer',
+            'stripe_product_id' => 'nullable|string',
             'seo_tags' => 'nullable|array',
             'released_at' => 'nullable|date',
         ];

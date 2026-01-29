@@ -41,7 +41,7 @@ class ProductControllerTest extends TestCase
             'status' => 'draft',
             'category_id' => 1,
             'creator' => 'テストユーザ',
-            'stripe_product_id' => 123456,
+            'stripe_product_id' => 'prod_123456',
             'seo_tags' => [
                 'title' => 'SEOタイトル',
                 'description' => 'SEO説明',
