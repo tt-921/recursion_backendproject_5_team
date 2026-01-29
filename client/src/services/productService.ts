@@ -25,6 +25,7 @@ export const getPublicProduct = async (id: number | string): Promise<ProductDeta
   const res = await fetch(`${API_URL}/products/${id}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
+    credentials: 'include',
   });
 
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
