@@ -247,10 +247,17 @@ const ProductDetail = () => {
                     setWishlistNotice('ほしい物リストに追加しました');
                     window.setTimeout(() => setWishlistNotice(null), 2000);
                   }
-                } catch (err) {
+                } catch (err: any) {
                   console.error('Wishlist update failed', err);
-                  setWishlistNotice('更新に失敗しました');
-                  window.setTimeout(() => setWishlistNotice(null), 2000);
+
+                  const message =
+                    err?.message?.includes('401') ||
+                    err?.message?.toLowerCase?.().includes('unauth')
+                      ? 'ログインすると、ほしい物リストを利用できます'
+                      : '更新に失敗しました';
+
+                  setWishlistNotice(message);
+                  window.setTimeout(() => setWishlistNotice(null), 3000);
                 }
               }}
             >
