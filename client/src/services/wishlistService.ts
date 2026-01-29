@@ -28,9 +28,10 @@ export const addWishlist = async (productId: number): Promise<WishlistIndexRespo
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'X-XSRF-TOKEN': getCsrfToken() ?? '',
     },
     credentials: 'include',
-    body: JSON.stringify({ productId }),
+    body: JSON.stringify({ product_id: productId }),
   });
   if (res.status === 401) throw makeError(401, 'Unauthorized');
   if (!res.ok) {
@@ -41,13 +42,15 @@ export const addWishlist = async (productId: number): Promise<WishlistIndexRespo
 };
 
 export const removeWishlist = async (productId: number): Promise<void> => {
-  const res = await fetch(`${API_URL}/wishlist/${productId}`, {
+  const res = await fetch(`${API_URL}/wishlist`, {
     method: 'DELETE',
     headers: {
+      'Content-Type': 'application/json',
       Accept: 'application/json',
       'X-XSRF-TOKEN': getCsrfToken() ?? '',
     },
     credentials: 'include',
+    body: JSON.stringify({ product_id: productId }),
   });
 
   if (res.status === 401) {
