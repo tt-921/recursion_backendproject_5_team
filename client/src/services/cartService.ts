@@ -26,7 +26,7 @@ const handleResponse = async (res: Response) => {
 export const addToCart = async (payload: AddToCartPayload) => {
   const csrfToken = getCsrfToken();
 
-  const res = await fetch(`${API_URL}/api/cart`, {
+  const res = await fetch(`${API_URL}/cart`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -44,7 +44,7 @@ export const addToCart = async (payload: AddToCartPayload) => {
  * GET: 商品取得
  */
 export const getCart = async () => {
-  const res = await fetch(`${API_URL}/api/cart`, {
+  const res = await fetch(`${API_URL}/cart`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -61,7 +61,7 @@ export const getCart = async () => {
 export const updateCartItem = async (payload: UpdateCartPayload) => {
   const csrfToken = getCsrfToken();
 
-  const res = await fetch(`${API_URL}/api/cart`, {
+  const res = await fetch(`${API_URL}/cart`, {
     method: "PUT",
     credentials: "include",
     headers: {
@@ -81,7 +81,7 @@ export const updateCartItem = async (payload: UpdateCartPayload) => {
 export const deleteCartItem = async (cart_item_id: number) => {
   const csrfToken = getCsrfToken();
 
-  const res = await fetch(`${API_URL}/api/cart`, {
+  const res = await fetch(`${API_URL}/cart`, {
     method: "DELETE",
     credentials: "include",
     headers: {

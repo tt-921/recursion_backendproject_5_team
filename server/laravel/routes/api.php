@@ -5,4 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebhookController;
 
 
-Route::post('/stripe/webhook', [WebhookController::class, 'handle']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/checkout', [CheckoutController::class, 'checkout']);
+});
+

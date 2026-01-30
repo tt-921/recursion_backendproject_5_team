@@ -26,8 +26,8 @@ class Product extends Model
         'seo_tags' => 'array',
         'released_at' => 'datetime',
     ];
-    
-    protected $hidden = ['default_price_id', 'stripe_product_id', 'creator', 'seo_tags'];
+
+    protected $hidden = ['default_price_id', 'creator', 'seo_tags'];
     protected $appends = ['price'];
 
     public function scopePublished($q)

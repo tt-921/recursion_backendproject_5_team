@@ -18,7 +18,7 @@ export const StripeCheckout = async () => {
     }
 
     // カート情報や注文情報はサーバー側で取得することを想定
-    const response = await fetch(`${API_URL}/api/checkout`, {
+    const response = await fetch(`${API_URL}/checkout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,14 +30,20 @@ export const StripeCheckout = async () => {
 
     console.log('Response status:', response.status);
 
-    const data = await response.json();
-
-    if (!data.url) {
-      console.error('Stripe Checkout URLがサーバーから返されませんでした。', data);
-      alert("決済セッションの作成に失敗しました");
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 419) {
+        alert("ログインすると決済できます");
+      } else if (response.status === 400 || response.status === 422) {
+        alert("カート内容を確認してください");
+      } else if (response.status >= 500) {
+        alert("サーバーエラーが発生しました。時間をおいて再度お試しください");
+      } else {
+        alert("決済処理に失敗しました");
+      }
       return;
     }
-    console.log('Response data:', data);
+
+    const data = await response.json();
 
     //StripeのCheckoutページに斡旋
     window.location.href = data.url;

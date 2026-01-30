@@ -3,6 +3,8 @@ import { ChevronRight, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getCart, deleteCartItem, updateCartItem} from '@/services/cartService';
 import type { CartItem } from '@/types/cartType';
+import { useNavigate } from 'react-router-dom';
+import { calculateCartTotals, formatCurrency } from '@/lib/cart/calculator';
 
 interface RecommendedProduct {
   id: string;
@@ -49,7 +51,8 @@ const Cart: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [recommendedProducts, setRecommendedProducts] = useState<RecommendedProduct[]>([]);
-  const shippingFee = 1820;
+  const shippingFee = 1820; // 定数として定義
+  const navigate = useNavigate();
 
   //GET:商品情報取得
   useEffect(() => {
@@ -112,18 +115,9 @@ const Cart: React.FC = () => {
     }
   };
 
+  const { subtotal, total } = calculateCartTotals(cartItems, shippingFee);
 
-  // 商品小計の計算（unit_amountを使用）
-  const subtotal = cartItems.reduce((sum, item) => {
-    const unitAmount = item.unit_amount ?? 0;
-    return sum + unitAmount * item.quantity;
-  }, 0);
-  const total = subtotal + shippingFee;
-
-  const formatCurrency = (amount: number): string => {
-    return amount.toLocaleString('ja-JP');
-  };
-
+  // 星評価を生成
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-0.5">
@@ -135,6 +129,10 @@ const Cart: React.FC = () => {
       </div>
     );
   };
+
+  const handleDeliveryPage = () => {
+    navigate('/delivery');
+  }
 
   if (isLoading) {
     return (
@@ -243,7 +241,10 @@ const Cart: React.FC = () => {
               <ChevronRight className="w-4 h-4" />
             </button>
 
-            <Button className="w-full bg-black hover:bg-gray-800 text-white py-6">
+            <Button 
+              className="w-full bg-black hover:bg-gray-800 text-white py-6"
+              onClick={handleDeliveryPage}
+            >
               注文を確定する
             </Button>
           </div>
