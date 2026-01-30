@@ -17,6 +17,12 @@ class CheckoutController extends Controller
 
     public function create(Request $request, PaymentService $paymentService)
     {
+        if (!auth()->check()) {
+        return response()->json([
+            'message' => 'Unauthenticated'
+        ], 401);
+    }
+    
         $user = $request->user();
 
         // サーバー側で cart を取得
