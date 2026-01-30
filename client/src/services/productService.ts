@@ -10,7 +10,7 @@ function makeError(status: number, message?: string) {
 }
 
 export const listPublicProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${API_URL}/api/products`, {
+  const res = await fetch(`${API_URL}/products`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
@@ -22,9 +22,10 @@ export const listPublicProducts = async (): Promise<Product[]> => {
 };
 
 export const getPublicProduct = async (id: number | string): Promise<ProductDetailResponse> => {
-  const res = await fetch(`${API_URL}/api/products/${id}`, {
+  const res = await fetch(`${API_URL}/products/${id}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
+    credentials: 'include',
   });
 
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -34,7 +35,7 @@ export const getPublicProduct = async (id: number | string): Promise<ProductDeta
 };
 
 export const searchProductsBy = async (term: string): Promise<SearchResult> => {
-  const res = await fetch(`${API_URL}/api/products/search?keyword=${encodeURIComponent(term)}`, {
+  const res = await fetch(`${API_URL}/products/search?keyword=${encodeURIComponent(term)}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });

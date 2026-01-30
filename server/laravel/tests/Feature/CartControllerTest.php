@@ -15,6 +15,12 @@ class CartControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private static function nextStripePriceId(): int
+    {
+        static $id = 123456;
+        return $id++;
+    }
+
     private function createProductAndPrice(): array
     {
         $category = Category::factory()->create();
@@ -24,6 +30,10 @@ class CartControllerTest extends TestCase
         ]);
         $price = Price::factory()->create([
             'product_id' => $product->id,
+            // `stripe_price_id` is unique in DB; generate a unique value per call.
+            'stripe_price_id' => self::nextStripePriceId(),
+            'unit_amount' => 1200,
+            'created_at' => now(),
         ]);
 
         return [$product, $price];
@@ -63,11 +73,11 @@ class CartControllerTest extends TestCase
             'price_id' => $price->id,
             'quantity' => 1,
         ]);
-        
+
         $token = $createResponse->getCookie('cart_token')->getValue();
 
         $itemId = $createResponse->json('items.0.id');
-        
+
         $updateResponse = $this->withCookie('cart_token', $token)->withCredentials()->apiPut('cart', [
             'cart_item_id' => $itemId,
             'quantity' => 4,

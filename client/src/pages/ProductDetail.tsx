@@ -1,26 +1,30 @@
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Star, Loader2, ShoppingCart, Check } from "lucide-react";
-import Heading from "@/components/Heading";
-import { getPublicProduct } from "@/services/productService";
-import type { ProductDetail as ProductDetailType } from "@/types/ProductDetailType";
-import { addToCart } from "@/services/cartService";
+} from '@/components/ui/select';
+import { FolderCheck, Star, Loader2, ShoppingCart, Check } from 'lucide-react';
+import Heading from '@/components/Heading';
+import { getPublicProduct } from '@/services/productService';
+import { addWishlist, removeWishlist } from '@/services/wishlistService';
+import type { ProductDetail as ProductDetailType } from '@/types/ProductDetailType';
+
+import { addToCart } from '@/services/cartService';
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const [selectedQty, setSelectedQty] = useState("1");
+  const [selectedQty, setSelectedQty] = useState('1');
   const [product, setProduct] = useState<ProductDetailType | null>(null);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistNotice, setWishlistNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // カート追加の状態管理
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [addToCartSuccess, setAddToCartSuccess] = useState(false);
@@ -31,24 +35,23 @@ const ProductDetail = () => {
     try {
       setIsAddingToCart(true);
       setAddToCartSuccess(false);
-      
+
       await addToCart({
         product_id: product.id,
         price_id: product.default_price.id,
         quantity: Number(selectedQty),
       });
-      
-      console.log("アイテム追加成功");
+
+      console.log('アイテム追加成功');
       setAddToCartSuccess(true);
-      
+
       // 3秒後に成功メッセージをリセット
       setTimeout(() => {
         setAddToCartSuccess(false);
       }, 3000);
-      
     } catch (err) {
       console.error(err);
-      alert("カートへの追加に失敗しました");
+      alert('カートへの追加に失敗しました');
     } finally {
       setIsAddingToCart(false);
     }
@@ -56,39 +59,96 @@ const ProductDetail = () => {
 
   // 仮の補助データ（販売元、レビュー、推奨商品）
   const productsInfo = {
-    production: "日本",
-    size: "約45cm * 100cm",
-    supplier: "〇〇株式会社",
-    material: "木製",
-    weight: "5.3kg",
-    content: "1個",
+    production: '日本',
+    size: '約45cm * 100cm',
+    supplier: '〇〇株式会社',
+    material: '木製',
+    weight: '5.3kg',
+    content: '1個',
   };
 
   const prodctDescriptions = {
     product_detail:
-      "商品の詳細がここに描かれます。商品説明、使用方法、注意点などの情報を記載できます。",
-    about_seller:
-      "文章が入ります。文章が入ります。文章が入ります。文章が入ります。",
-    shipping_info:
-      "文章が入ります。文章が入ります。文章が入ります。文章が入ります。",
-    handling_item:
-      "文章が入ります。文章が入ります。文章が入ります。文章が入ります。",
+      '商品の詳細がここに描かれます。商品説明、使用方法、注意点などの情報を記載できます。',
+    about_seller: '文章が入ります。文章が入ります。文章が入ります。文章が入ります。',
+    shipping_info: '文章が入ります。文章が入ります。文章が入ります。文章が入ります。',
+    handling_item: '文章が入ります。文章が入ります。文章が入ります。文章が入ります。',
   };
 
   const suggestItems = [
-    { id: 1, name: "レザーポーチ", rating: 5, image: "", description: "手のひらサイズで持ち運びに便利なレザーポーチ。" },
-    { id: 2, name: "本革キーケース", rating: 4, image: "", description: "上質な革を使用した耐久性の高いキーケースです。" },
-    { id: 3, name: "ミニショルダーバッグ", rating: 5, image: "", description: "軽量で日常使いに最適なショルダーバッグ。" },
-    { id: 4, name: "カードホルダー", rating: 4, image: "", description: "スタイリッシュなデザインのカード収納ケース。" },
+    {
+      id: 1,
+      name: 'レザーポーチ',
+      rating: 5,
+      image: '',
+      description: '手のひらサイズで持ち運びに便利なレザーポーチ。',
+    },
+    {
+      id: 2,
+      name: '本革キーケース',
+      rating: 4,
+      image: '',
+      description: '上質な革を使用した耐久性の高いキーケースです。',
+    },
+    {
+      id: 3,
+      name: 'ミニショルダーバッグ',
+      rating: 5,
+      image: '',
+      description: '軽量で日常使いに最適なショルダーバッグ。',
+    },
+    {
+      id: 4,
+      name: 'カードホルダー',
+      rating: 4,
+      image: '',
+      description: 'スタイリッシュなデザインのカード収納ケース。',
+    },
   ];
 
   const reviews = [
-    { id: 1, name: "山田 太郎", image: "", rating: 5, text: "とても高品質で、期待以上の商品でした！毎日使っています。" },
-    { id: 2, name: "佐藤 花子", image: "", rating: 4, text: "デザインが素敵で、使い勝手も良いです。もう少し軽いと嬉しいかも。" },
-    { id: 3, name: "John Doe", image: "", rating: 5, text: "Perfect craftsmanship. Worth every penny!" },
-    { id: 4, name: "田中 一郎", image: "", rating: 4, text: "丈夫で長持ちしそうです。友人にもおすすめします。" },
-    { id: 5, name: "Lisa", image: "", rating: 5, text: "Beautiful bag! The leather texture feels amazing." },
-    { id: 6, name: "高橋 亮", image: "", rating: 4, text: "サイズもちょうどよく、仕事用に重宝しています。" },
+    {
+      id: 1,
+      name: '山田 太郎',
+      image: '',
+      rating: 5,
+      text: 'とても高品質で、期待以上の商品でした！毎日使っています。',
+    },
+    {
+      id: 2,
+      name: '佐藤 花子',
+      image: '',
+      rating: 4,
+      text: 'デザインが素敵で、使い勝手も良いです。もう少し軽いと嬉しいかも。',
+    },
+    {
+      id: 3,
+      name: 'John Doe',
+      image: '',
+      rating: 5,
+      text: 'Perfect craftsmanship. Worth every penny!',
+    },
+    {
+      id: 4,
+      name: '田中 一郎',
+      image: '',
+      rating: 4,
+      text: '丈夫で長持ちしそうです。友人にもおすすめします。',
+    },
+    {
+      id: 5,
+      name: 'Lisa',
+      image: '',
+      rating: 5,
+      text: 'Beautiful bag! The leather texture feels amazing.',
+    },
+    {
+      id: 6,
+      name: '高橋 亮',
+      image: '',
+      rating: 4,
+      text: 'サイズもちょうどよく、仕事用に重宝しています。',
+    },
   ];
 
   const [visibleCount, setVisibleCount] = useState(2);
@@ -104,9 +164,10 @@ const ProductDetail = () => {
       try {
         const response = await getPublicProduct(id);
         setProduct(response.data);
+        setIsWishlisted(Boolean(response.meta.is_wishlisted));
       } catch (err: any) {
         console.error(err);
-        setError(err.message || "商品取得に失敗しました");
+        setError(err.message || '商品取得に失敗しました');
       } finally {
         setLoading(false);
       }
@@ -125,17 +186,17 @@ const ProductDetail = () => {
       </div>
     );
   }
-  
+
   if (error) return <div className="text-red-600">エラー: {error}</div>;
   if (!product) return <div>商品が見つかりません</div>;
 
   // --- product が null でない場合に備えて optional chaining と default を利用 ---
-  const productTitle = product.title || "商品名なし";
-  const productDescription = product.description || "説明なし";
-  const productCategoryId = product.category_id ?? "-";
+  const productTitle = product.title || '商品名なし';
+  const productDescription = product.description || '説明なし';
+  const productCategoryId = product.category_id ?? '-';
 
   // 画像は仮置き
-  const images = ["", "", "", ""];
+  const images = ['', '', '', ''];
 
   return (
     <div className="w-full bg-white py-10">
@@ -170,7 +231,7 @@ const ProductDetail = () => {
 
             <div className="flex items-center gap-2 mt-3">
               <p className="text-xl font-semibold text-gray-900">
-                ¥{(product.default_price.unit_amount ?? 0).toLocaleString()}{" "}
+                ¥{(product.default_price.unit_amount ?? 0).toLocaleString()}{' '}
                 <span className="text-sm text-gray-600">（税込）</span>
               </p>
               <span className="text-sm font-medium">送料無料</span>
@@ -180,7 +241,7 @@ const ProductDetail = () => {
                   <Star
                     key={i}
                     className={`h-5 w-5 ${
-                      i < 4 ? "fill-yellow-500 text-yellow-500" : "fill-gray-200 text-gray-300"
+                      i < 4 ? 'fill-yellow-500 text-yellow-500' : 'fill-gray-200 text-gray-300'
                     }`}
                   />
                 ))}
@@ -208,12 +269,9 @@ const ProductDetail = () => {
             <Button className="w-full bg-black text-white text-sm mt-1 py-5 hover:bg-gray-800">
               購入する
             </Button>
-            
-            <Button 
+            <Button
               className={`w-full text-white text-sm mt-1 py-5 transition-all ${
-                addToCartSuccess 
-                  ? 'bg-green-600 hover:bg-green-700' 
-                  : 'bg-black hover:bg-gray-800'
+                addToCartSuccess ? 'bg-green-600 hover:bg-green-700' : 'bg-black hover:bg-gray-800'
               }`}
               onClick={handleAddToCart}
               disabled={isAddingToCart || addToCartSuccess}
@@ -235,7 +293,50 @@ const ProductDetail = () => {
                 </span>
               )}
             </Button>
+            <Button
+              type="button"
+              variant={isWishlisted ? 'default' : 'outline'}
+              className={`w-full mt-1 py-5 text-sm transition-colors ${
+                isWishlisted
+                  ? 'bg-black text-white hover:bg-gray-800'
+                  : 'border border-gray-300 hover:bg-gray-100'
+              }`}
+              onClick={async () => {
+                if (!product) return;
+                try {
+                  if (isWishlisted) {
+                    await removeWishlist(product.id);
+                    setIsWishlisted(false);
+                    setWishlistNotice('ほしい物リストから削除しました');
+                    window.setTimeout(() => setWishlistNotice(null), 2000);
+                  } else {
+                    await addWishlist(product.id);
+                    setIsWishlisted(true);
+                    setWishlistNotice('ほしい物リストに追加しました');
+                    window.setTimeout(() => setWishlistNotice(null), 2000);
+                  }
+                } catch (err: any) {
+                  console.error('Wishlist update failed', err);
 
+                  const message =
+                    err?.message?.includes('401') ||
+                    err?.message?.toLowerCase?.().includes('unauth')
+                      ? 'ログインすると、ほしい物リストを利用できます'
+                      : '更新に失敗しました';
+
+                  setWishlistNotice(message);
+                  window.setTimeout(() => setWishlistNotice(null), 3000);
+                }
+              }}
+            >
+              <FolderCheck className="h-4 w-4 mr-2" />
+              {isWishlisted ? 'ほしい物リストから削除' : 'ほしい物リストに追加'}
+            </Button>
+            {wishlistNotice && (
+              <p className="mt-2 text-sm text-gray-700" aria-live="polite">
+                {wishlistNotice}
+              </p>
+            )}
             <div className="mt-10 pt-5">
               <h2 className="text-lg font-semibold text-gray-800 mb-2">商品概要</h2>
               <p className="text-sm text-gray-700 leading-relaxed">{productDescription}</p>
@@ -289,7 +390,6 @@ const ProductDetail = () => {
         </div>
       </section>
 
-
       {/* --- 3~7 はそのままコピー --- */}
       <section className="max-w-6xl mx-auto p-8 mt-10 gap-10">
         <h2 className="text-lg font-semibold text-gray-800 mb-3">販売元について</h2>
@@ -320,7 +420,9 @@ const ProductDetail = () => {
                   <Star
                     key={i}
                     className={`h-4 w-4 ${
-                      i < review.rating ? "fill-yellow-500 text-yellow-500" : "fill-gray-200 text-gray-300"
+                      i < review.rating
+                        ? 'fill-yellow-500 text-yellow-500'
+                        : 'fill-gray-200 text-gray-300'
                     }`}
                   />
                 ))}
@@ -345,15 +447,26 @@ const ProductDetail = () => {
         <Heading>よく一緒に購入されている商品</Heading>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
           {suggestItems.map((item) => (
-            <div key={item.id} className="border border-gray-200 p-4 shadow-sm bg-white flex flex-col items-center">
-              <img src={item.image} alt={item.name} className="w-full h-48 object-cover rounded-md mb-3" />
-              <h3 className="text-base font-semibold text-gray-800 mb-2 text-center">{item.name}</h3>
+            <div
+              key={item.id}
+              className="border border-gray-200 p-4 shadow-sm bg-white flex flex-col items-center"
+            >
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-full h-48 object-cover rounded-md mb-3"
+              />
+              <h3 className="text-base font-semibold text-gray-800 mb-2 text-center">
+                {item.name}
+              </h3>
               <div className="flex justify-center mb-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
                     className={`h-4 w-4 ${
-                      i < item.rating ? "fill-yellow-500 text-yellow-500" : "fill-gray-200 text-gray-300"
+                      i < item.rating
+                        ? 'fill-yellow-500 text-yellow-500'
+                        : 'fill-gray-200 text-gray-300'
                     }`}
                   />
                 ))}

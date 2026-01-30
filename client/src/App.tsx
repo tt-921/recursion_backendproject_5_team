@@ -15,6 +15,7 @@ import AdminCategoryCreate from '@/pages/admin/AdminCategoryCreate';
 import AdminCategoryEdit from '@/pages/admin/AdminCategoryEdit';
 import FavoriteList from './pages/FavoriteList';
 import Cart from './pages/Cart';
+import Wishlist from './pages/Wishlist';
 import OrderHistory from './pages/OrderHistory';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/product-list" element={<ProductList />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/orderHistory" element={<OrderHistory />} />
         </Route>
         <Route path="admin" element={<AdminLayout />}>

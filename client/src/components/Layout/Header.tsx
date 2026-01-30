@@ -6,7 +6,16 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Input } from '@/components/ui/input';
-import { ChevronRight, Coins, Heart, History, Search, ShoppingCart, User } from 'lucide-react';
+import {
+  ChevronRight,
+  Coins,
+  Heart,
+  History,
+  Search,
+  ShoppingCart,
+  User,
+  FolderCheck,
+} from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -37,6 +46,10 @@ function Header() {
     await logout();
     setUser(null);
     navigate('/login');
+  };
+
+  const handleWishlistClick = () => {
+    navigate('/wishlist');
   };
 
   const handleOrderhistory = async () => {
@@ -115,6 +128,16 @@ function Header() {
                   onClick={handleCartPage}
                 >
                   <ShoppingCart />
+                </Button>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Button
+                  size="icon-sm"
+                  aria-label="Submit"
+                  variant="ghost"
+                  onClick={handleWishlistClick}
+                >
+                  <FolderCheck />
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>

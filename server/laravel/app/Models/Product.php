@@ -28,6 +28,7 @@ class Product extends Model
     ];
 
     protected $hidden = ['default_price_id', 'creator', 'seo_tags'];
+    protected $appends = ['price'];
 
     public function scopePublished($q)
     {
@@ -48,5 +49,10 @@ class Product extends Model
     public function defaultPrice()
     {
         return $this->belongsTo(Price::class, 'default_price_id');
+    }
+
+    public function getPriceAttribute(): int
+    {
+        return (int) optional($this->defaultPrice)->unit_amount ?? 0;
     }
 }

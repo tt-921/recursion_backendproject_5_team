@@ -104,4 +104,23 @@ class WishlistControllerTest extends TestCase
         ]);
     }
 
+    public function test_user_can_list_wishlist(): void
+{
+    $user = User::factory()->create();
+    $product = $this->createProduct();
+
+    $wishlist = Wishlist::create([
+        'user_id' => $user->id,
+        'name' => 'test_wishlist',
+    ]);
+    $wishlist->items()->create([
+        'product_id' => $product->id,
+        'is_deleted' => false,
+    ]);
+
+    $response = $this->actingAs($user)->apiGet('wishlist');
+
+    $response->assertStatus(200);
+}
+
 }

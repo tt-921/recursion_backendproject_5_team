@@ -10,9 +10,35 @@ class WishlistController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $wishlists = $user->wishlistProducts()->get();
 
-        return response()->json($wishlists);
+        // Userは hasOne Wishlist を想定
+        $wishlist = $user->wishlist()->first();
+
+        if (!$wishlist) {
+            return response()->json([
+                'items' => [],
+                'total_price' => 0,
+                'count' => 0,
+            ]);
+        }
+
+        $items = $wishlist->items()
+            ->where('is_deleted', false)
+            ->with(['product.defaultPrice'])
+            ->get();
+
+        $products = $items
+            ->map(fn ($item) => $item->product)
+            ->filter()
+            ->values();
+
+        $totalPrice = (int) $products->sum('price');
+
+        return response()->json([
+            'items' => $products,
+            'total_price' => $totalPrice,
+            'count' => $products->count(),
+        ]);
     }
 
     public function add(Request $request)

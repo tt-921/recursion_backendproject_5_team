@@ -51,9 +51,8 @@ const Cart: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [recommendedProducts, setRecommendedProducts] = useState<RecommendedProduct[]>([]);
-  const shippingFee = 1820;
+  const shippingFee = 1820; // 定数として定義
   const navigate = useNavigate();
-
 
   //GET:商品情報取得
   useEffect(() => {
@@ -116,9 +115,9 @@ const Cart: React.FC = () => {
     }
   };
 
-
   const { subtotal, total } = calculateCartTotals(cartItems, shippingFee);
 
+  // 星評価を生成
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-0.5">
